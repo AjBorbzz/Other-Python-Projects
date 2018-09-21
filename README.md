@@ -1,2 +1,2 @@
 # Other-Python-Projects
-Attempt Coding Challenges for mental exercise.
+Coding Challenges for mental exercise.
