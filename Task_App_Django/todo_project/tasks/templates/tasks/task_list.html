@@ -26,6 +26,28 @@
         nav ul li a:hover {
             text-decoration: underline;
         }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        footer {
+            margin-top: 20px;
+            padding: 10px;
+            text-align: center;
+            background-color: #333;
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -42,13 +64,30 @@
         <input type="text" name="title" placeholder="Add a new task" required>
         <button type="submit">Add</button>
     </form>
-    <ul>
-        {% for task in tasks %}
-            <li>
-                {{ task.title }} 
-                <a href="{% url 'delete_task' task.id %}">Delete</a>
-            </li>
-        {% endfor %}
-    </ul>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Task</th>
+                <th>Status</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for task in tasks %}
+                <tr>
+                    <td>{{ task.title }}</td>
+                    <td>{{ task.completed|yesno:"Completed,Not Completed" }}</td>
+                    <td><a href="{% url 'delete_task' task.id %}">Delete</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <footer>
+        <p>Contact Me</p>
+        <p>Location</p>
+        <p>Book a Call</p>
+    </footer>
 </body>
 </html>
