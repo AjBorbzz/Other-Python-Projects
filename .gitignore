@@ -1,6 +1,5 @@
 *.config
 venv/
-*.json
 bin/
 node_modules/
 .npm
