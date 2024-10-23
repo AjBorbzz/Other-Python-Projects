@@ -1,5 +1,12 @@
 from enum import Enum
 from fastapi import FastAPI
+from pydantic import BaseModel
+
+class Item(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    tax: float | None = None
 
 class ModelName(str, Enum):
     alexnet = "alexnet"
@@ -40,4 +47,8 @@ async def read_user_item(
         item.update(
             {"description": "This is an amazing item that has a long description"}
         )
+    return item
+
+@app.post("/items/")
+async def create_item(item: Item):
     return item
