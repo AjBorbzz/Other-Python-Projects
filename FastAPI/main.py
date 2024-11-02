@@ -1,7 +1,7 @@
 from enum import Enum
 from fastapi import FastAPI, Query, Path
-from typing import Annotated
-from pydantic import BaseModel
+from typing import Annotated, Literal
+from pydantic import BaseModel, Field
 
 class Item(BaseModel):
     name: str
@@ -13,6 +13,12 @@ class ModelName(str, Enum):
     alexnet = "alexnet"
     resnet = "resnet"
     lenet = "lenet"
+
+class FilterParams(BaseModel):
+    limit : int = Field(100, gt=0, le=100)
+    offset: int = Field(0, ge=0)
+    order_by: Literal["created_at", "updated_at"] = "created_at"
+    tags: list[str] = []
 
 app = FastAPI()
 
@@ -59,11 +65,8 @@ async def create_item(item: Item):
     return item_dict
 
 @app.get("/items/")
-async def read_items(q: Annotated[str | None, Query(max_length=50)] = None):
-    results = {"items": [{"item_id": "Foo"}, {"item_id": "Bar"}]}
-    if q:
-        results.update({"q": q})
-    return results
+async def read_items(filter_query: Annotated[FilterParams, Query()]):
+    return filter_query
 
 @app.get("/items/{item_id}")
 async def read_items(item_id: Annotated[int, Path(title="The ID of the item to get", gt=0, le=1000)],
