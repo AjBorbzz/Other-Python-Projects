@@ -89,7 +89,7 @@ async def read_items(item_id: Annotated[int, Path(title="The ID of the item to g
 @app.put("/items/{item_id}")
 async def update_item(*,
                     item_id: int, 
-                    item: Item, 
+                    item: Annotated[Item, Body(embed=True)], 
                     user: User, 
                     importance: Annotated[int, Body(gt=0)],
                     q: str | None = None):
