@@ -1,5 +1,5 @@
 from enum import Enum
-from fastapi import FastAPI, Query, Path
+from fastapi import FastAPI, Query, Path, Body
 from typing import Annotated, Literal
 from pydantic import BaseModel, Field
 
@@ -87,7 +87,7 @@ async def read_items(item_id: Annotated[int, Path(title="The ID of the item to g
     return results
 
 @app.put("/items/{item_id}")
-async def update_item(item_id: int, item: Item, user: User):
-    results = {"item_id": item_id, "item": item, "user": user}
+async def update_item(item_id: int, item: Item, user: User, importance: Annotated[int, Body()]):
+    results = {"item_id": item_id, "item": item, "user": user, "importance": importance}
     return results
 
