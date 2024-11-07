@@ -16,7 +16,13 @@ class Item(BaseModel):
     price: float = Field(gt=0, description="The price must be greater than zero")
     tax: float | None = None
     tags: set[str] = set()
-    image: Image | None = None
+    image: list[Image] | None = None
+
+class Offer(BaseModel):
+    name: str
+    description: str | None = None
+    price: float
+    items: list[Item]
 
 class User(BaseModel):
     username: str
@@ -107,3 +113,7 @@ async def update_item(*,
         results.update({"q": q})
     return results
 
+
+@app.post("/images/multiple/")
+async def create_multiple_images(images: list[Image]):
+    return images
