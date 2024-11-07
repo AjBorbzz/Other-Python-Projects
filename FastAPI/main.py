@@ -1,8 +1,12 @@
 from enum import Enum
 from fastapi import FastAPI, Query, Path, Body
 from typing import Annotated, Literal
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, HttpUrl
 from typing import List, Union
+
+class Image(BaseModel):
+    url: HttpUrl
+    name: str
 
 class Item(BaseModel):
     name: str
@@ -12,6 +16,7 @@ class Item(BaseModel):
     price: float = Field(gt=0, description="The price must be greater than zero")
     tax: float | None = None
     tags: set[str] = set()
+    image: Image | None = None
 
 class User(BaseModel):
     username: str
