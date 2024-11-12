@@ -5,6 +5,7 @@ async def main():
     async with AsyncWebCrawler(verbose=True) as crawler:
         result = await crawler.arun(url="https://www.nbcnews.com/business")
         print(f"Basic crawl result: {result.markdown[:500]}")  # Print first 500 characters
+        print(result.media)
 
 
 if __name__ == "__main__":
