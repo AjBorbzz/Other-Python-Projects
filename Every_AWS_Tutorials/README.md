@@ -1,0 +1,1 @@
+In this repository, I am creating a new directory to store all the tutorials I encountered on AWS. This will serve as my review material and reference for the Solutions Architect role.
