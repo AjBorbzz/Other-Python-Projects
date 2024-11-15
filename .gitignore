@@ -5,3 +5,4 @@ node_modules/
 .npm
 .log
 spark-3.5.3-bin-hadoop3/
+.env
