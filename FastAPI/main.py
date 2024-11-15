@@ -18,6 +18,19 @@ class Item(BaseModel):
     tags: set[str] = set()
     image: list[Image] | None = None
 
+    model_config = {
+        "json_schema_extra" : {
+            "examples": [
+                {
+                    "name": "Foo",
+                    "description": "A very nice item",
+                    "price": 45.6,
+                    "tax": 32,
+                }
+            ]
+        }
+    }
+
 class Offer(BaseModel):
     name: str
     description: str | None = None
