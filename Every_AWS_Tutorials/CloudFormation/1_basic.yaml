@@ -1,0 +1,8 @@
+Resources:
+  MyS3Bucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: your-bucket-name
+      Tags:
+        - Key: CloudFormationTest
+          Value: your-value
