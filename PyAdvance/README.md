@@ -93,50 +93,6 @@ A higher-order function is a function that either:
 
 ---
 
-### **Python Code Example**
-Here’s a code snippet demonstrating both concepts:
-
-```python
-# First-Class Functions
-def greet(name):
-    return f"Hello, {name}!"
-
-# Assigning function to a variable
-greet_function = greet
-print(greet_function("Alice"))  # Output: Hello, Alice!
-
-# Passing function as an argument
-def execute_function(func, value):
-    return func(value)
-
-print(execute_function(greet, "Bob"))  # Output: Hello, Bob!
-
-# Returning a function from another function
-def multiplier(factor):
-    def multiply_by_factor(number):
-        return number * factor
-    return multiply_by_factor
-
-double = multiplier(2)  # Returns a function that doubles a number
-print(double(5))  # Output: 10
-
-# Higher-Order Function Example
-# Using map (built-in higher-order function)
-numbers = [1, 2, 3, 4, 5]
-squared_numbers = list(map(lambda x: x ** 2, numbers))
-print(squared_numbers)  # Output: [1, 4, 9, 16, 25]
-
-# Custom higher-order function
-def apply_operation(operation, values):
-    return [operation(value) for value in values]
-
-# Using with a lambda function
-cubed_numbers = apply_operation(lambda x: x ** 3, numbers)
-print(cubed_numbers)  # Output: [1, 8, 27, 64, 125]
-```
-
----
-
 ### **Benefits and Importance**
 #### **First-Class Functions**
 1. **Flexibility**:
@@ -173,6 +129,110 @@ Higher-order functions promote the **DRY (Don’t Repeat Yourself)** principle b
 These concepts are critical for writing expressive, elegant, and maintainable code in Python and other modern programming languages.
 
 ### 3. Closures
+Here's a detailed explanation of **Closures**, related concepts like **Lexical Scoping** and the **nonlocal keyword**, along with their **benefits**, **importance**, and a Python code sample.
+
+---
+
+### **Closures**
+**Description**:  
+A closure is a function that retains access to the variables in its lexical scope even when the function is executed outside of that scope.  
+In simpler terms, a closure "remembers" the environment in which it was created.
+
+---
+
+### **Related Concepts**
+
+#### **1. Lexical Scoping**  
+**Description**:  
+Lexical scoping (also called static scoping) determines a variable's scope based on its position in the source code. Variables defined in a parent function are accessible to child (inner) functions due to this scoping rule.
+
+#### **2. `nonlocal` Keyword**  
+**Description**:  
+The `nonlocal` keyword in Python allows you to modify a variable in the nearest enclosing (non-global) scope. It’s used in closures to update variables in the parent function's scope.
+
+---
+
+### **Python Code Example**
+Here’s a code snippet demonstrating **closures**, **lexical scoping**, and the `nonlocal` keyword:
+
+```python
+# Closure Example
+def multiplier(factor):
+    # 'factor' is captured by the inner function (lexical scoping)
+    def multiply_by_factor(number):
+        return number * factor
+    return multiply_by_factor
+
+double = multiplier(2)  # 'factor' = 2 is captured
+triple = multiplier(3)  # 'factor' = 3 is captured
+
+print(double(5))  # Output: 10
+print(triple(5))  # Output: 15
+
+# 'nonlocal' Keyword Example
+def counter(start=0):
+    count = start  # Enclosing variable
+
+    def increment():
+        nonlocal count  # Refers to 'count' in the enclosing scope
+        count += 1
+        return count
+
+    return increment
+
+counter1 = counter(10)
+print(counter1())  # Output: 11
+print(counter1())  # Output: 12
+
+counter2 = counter(5)
+print(counter2())  # Output: 6
+```
+
+---
+
+### **Benefits and Importance**
+
+#### **Closures**
+1. **State Preservation**:
+   - Closures allow a function to retain state across invocations without using global variables.
+2. **Encapsulation**:
+   - Variables in closures are private to the function, enhancing data security.
+3. **Dynamic Behavior**:
+   - Closures can create specialized functions by capturing different values from the enclosing environment (e.g., `double` and `triple` in the example).
+
+**Importance**:  
+Closures are essential for creating dynamic, reusable, and encapsulated functionalities. They are widely used in callbacks, decorators, and functional programming.
+
+---
+
+#### **Lexical Scoping**
+1. **Predictability**:
+   - Variable resolution is based on code structure, not runtime conditions, making behavior consistent and easier to debug.
+2. **Foundation for Closures**:
+   - Lexical scoping is what enables closures to "remember" variables from their enclosing scope.
+
+**Importance**:  
+Lexical scoping provides the foundation for closures, enabling robust and predictable access to variables in nested functions.
+
+---
+
+#### **`nonlocal` Keyword**
+1. **Controlled Modification**:
+   - Allows modifying variables in the nearest enclosing scope, striking a balance between local and global scope.
+2. **Flexibility**:
+   - Enables mutable state in closures without relying on external variables or classes.
+
+**Importance**:  
+The `nonlocal` keyword is crucial for working with closures when state needs to be updated in the enclosing function’s scope, supporting patterns like counters or accumulators.
+
+---
+
+### How These Concepts Work Together:
+- **Lexical scoping** ensures inner functions have access to variables from their enclosing scope.  
+- **Closures** leverage lexical scoping to retain access to these variables even after the enclosing function exits.  
+- The **`nonlocal` keyword** enables mutating these retained variables, adding flexibility to closures.
+
+These concepts together enable advanced programming patterns, such as decorators, memoization, and factory functions, making them fundamental for Python development.
 ### 4. Decorators
 ### 5. Iterators, Iterables & Generators
 ### 6. Context Managers
