@@ -13,3 +13,4 @@ To get started with Pulumi, follow these steps:
 1. Install Pulumi CLI: ```curl -fsSL https://get.pulumi.com/```
 2. Install Language Runtime: Install the language runtime of your choice.
 3. Create a new Pulumi Project: Run ```pulumi new <project_name>``` to create a new project.
+4. Make sure to clean-up after this quickstart.
