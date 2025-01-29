@@ -25,7 +25,7 @@ def get_api_key(key_name):
 
 def get_claude_api_key():
     """Retrieves the claude API key from environment variables."""
-    return get_api_key("CLAUDE_API_KEY")
+    return get_api_key("ANTHROPIC_API_KEY")
 
 def get_serper_api_key():
     """Retrieves the Serper API Key from environment variables."""
