@@ -10,18 +10,9 @@ env = environ.Env(DEBUG=(bool,False))
 BASE_DIR = Path(__file__).resolve().parent.parent
 env_file_path = BASE_DIR / "core" / ".env" 
 environ.Env.read_env(env_file_path) 
-# environ.Env.read_env(os.path.join(BASE_DIR,'core', '.env'))
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 DEBUG = env('DEBUG')
 SECRET_KEY = env('SECRET_KEY')
-# SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = "django-insecure-7b%c35is-ik@8@@a-p%s37&%ec-^3ab8ry@sy6gx_hjjpm+#!u"
-
-# SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = True
-
 ALLOWED_HOSTS = []
 
 
@@ -34,6 +25,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "task_app.apps.TaskAppConfig",
 ]
 
 MIDDLEWARE = [
@@ -72,8 +64,12 @@ WSGI_APPLICATION = "core.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": env('DB_NAME'),
+        "USER": "postgres",
+        "PASSWORD": env('DB_PW'),
+        "HOST": "127.0.0.1",
+        "PORT": "5432"
     }
 }
 
