@@ -1,18 +1,26 @@
 
+
 from pathlib import Path
+import environ
+import os
+
+env = environ.Env(DEBUG=(bool,False))
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+env_file_path = BASE_DIR / "core" / ".env" 
+environ.Env.read_env(env_file_path) 
+# environ.Env.read_env(os.path.join(BASE_DIR,'core', '.env'))
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
-
+DEBUG = env('DEBUG')
+SECRET_KEY = env('SECRET_KEY')
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-_zv-a@+#ex-vh$uc+u+0c9%n@!w#b)i&o3e$i8h9k*g1h#cnd4"
+# SECRET_KEY = "django-insecure-7b%c35is-ik@8@@a-p%s37&%ec-^3ab8ry@sy6gx_hjjpm+#!u"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -26,7 +34,6 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "tasks",
 ]
 
 MIDDLEWARE = [
@@ -39,7 +46,7 @@ MIDDLEWARE = [
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
 ]
 
-ROOT_URLCONF = "todo_project.urls"
+ROOT_URLCONF = "core.urls"
 
 TEMPLATES = [
     {
@@ -57,7 +64,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "todo_project.wsgi.application"
+WSGI_APPLICATION = "core.wsgi.application"
 
 
 # Database
