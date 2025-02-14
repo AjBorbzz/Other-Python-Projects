@@ -26,12 +26,42 @@ DIRECTORIES = {
 FILE_FORMATS = {file_format: directory for directory, file_formats in DIRECTORIES.items()
                   for file_format in file_formats}
 
-def organize():
-    for entry in os.scandir():
-        if entry.is_dir():
-            continue
-        file_path = Path(entry.name)
-        file_format = file_path.suffix.lower()
-        if file_format in FILE_FORMATS:
-            directory_path = Path(FILE_FORMATS[file_format])
-            directory_path.mkdir(exist_ok=True)
+def organize_files(source_directory):
+    """
+    Organizes files in the specified source directory based on their file extensions.
+
+    Args:
+        source_directory: The path to the source directory as a string.
+    """
+    source_dir = Path(source_directory)
+
+    for entry in source_dir.iterdir():
+        if entry.is_file():
+            file_format = entry.suffix.lower()
+            if file_format in FILE_FORMATS:
+                directory_path = source_dir / FILE_FORMATS[file_format]
+                directory_path.mkdir(exist_ok=True)
+                entry.rename(directory_path / entry.name)
+
+    # Create "OTHER" directory to move files with unknown extensions
+    other_dir = source_dir / "OTHER"
+    other_dir.mkdir(exist_ok=True)
+
+    for entry in source_dir.iterdir():
+        if entry.is_file() and entry.suffix.lower() not in FILE_FORMATS:
+            entry.rename(other_dir / entry.name)
+
+    # Remove empty directories (except "OTHER")
+    for entry in source_dir.iterdir():
+        if entry.is_dir() and entry != other_dir and not any(entry.iterdir()):
+            entry.rmdir()
+
+def get_download_dir():
+    home = Path.home()
+    downloads = home / 'Downloads'
+    return downloads
+
+
+if __name__ == '__main__':
+    download_directory = get_download_dir()
+    organize_files(download_directory)
