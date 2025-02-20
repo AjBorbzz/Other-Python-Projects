@@ -1,0 +1,86 @@
+{# templates/blog/post/404.html #}
+{% extends "blog/base.xhtml" %}
+{% load static %}
+
+{% block title %}404 - Page Not Found{% endblock %}
+
+{% block extra_head %}
+<style>
+body {
+    background-color: #f8f9fa; /* Light Gray Background */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Modern Font */
+}
+
+.container-404 {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80vh; /* Fill at least the viewport height */
+    text-align: center;
+    padding: 20px;
+    
+}
+
+.error-code {
+    font-size: 12rem; /* Large Error Code */
+    font-weight: bold;
+    color: #dc3545; /* Bootstrap Danger Color */
+    margin-bottom: 0; /* Remove default margin */
+    line-height: 1;   /* Tighten line height */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1); /* Subtle Shadow */
+}
+
+.error-message {
+    font-size: 2rem;  /* Large, readable message */
+    color: #6c757d; /* Bootstrap Secondary Color */
+    margin-bottom: 30px;
+    max-width: 700px; /* Limit width for readability */
+}
+
+.return-link {
+    display: inline-block; /* Allow padding/margins */
+    padding: 12px 25px;
+    background-color: #007bff; /* Bootstrap Primary Color */
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease; /* Smooth Hover Transition */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15); /* Subtle Shadow */
+}
+.return-link:hover {
+    background-color: #0056b3; /* Darker Blue on Hover */
+    text-decoration: none;  /* Remove underline on hover */
+    color: white; /*Ensure text color is still white*/
+}
+
+.astronaut-img {
+  width: 150px; /* Adjust size as needed */
+  height: auto; /* Maintain aspect ratio */
+  margin-bottom: 20px;
+}
+/*Responsive image*/
+@media (max-width: 768px) {
+    .error-code {
+        font-size: 6rem; /* Smaller on smaller screens */
+    }
+
+    .error-message {
+        font-size: 1.5rem;
+    }
+    .astronaut-img {
+        width: 100px;
+    }
+}
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-404">
+    <img src="{% static 'blog/img/astronaut.png' %}" alt="Astronaut" class="astronaut-img">  <h1 class="error-code">404</h1>
+    <p class="error-message">Oops! It looks like you're lost in cyberspace.  The page you're looking for doesn't exist or has been moved.</p>
+    <a href="{% url 'blog:post_list' %}" class="return-link">Return to Home</a>
+</div>
+{% endblock %}
