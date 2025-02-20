@@ -3,6 +3,15 @@ from .models import Post
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 import markdown
+from django.views.generic import ListView
+
+
+class PostListView(ListView):
+    """Alternative to function based view for post list"""
+    queryset = Post.published.all()
+    context_object_name = 'posts'
+    paginate_by = 3
+    template_name = 'blog/post/list.xhtml'
 
 def post_list(request):
     post_list = Post.published.all()
