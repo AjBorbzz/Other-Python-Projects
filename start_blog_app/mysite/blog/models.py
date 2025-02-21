@@ -34,7 +34,7 @@ class Post(models.Model):
     class Meta:
         ordering = ['-publish']
         indexes = [models.Index(fields=['-publish']),]
-        verbose_name_plural = "Markdown Content"
+        verbose_name_plural = "Posts"
 
     def __str__(self):
         return self.title
@@ -51,7 +51,9 @@ class Post(models.Model):
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE,
-                             related_name="comments")
+                             related_name="comments") # Allows you to name the attribute that you use for the relationship from the related object back to this one.
+                                                    # We can retrieve the post of a comment object using 'comment.post' and retrieve all comments associated with a post object using 'post.comments.all()' 
+                                                    # If you don't define the related_name, the default would be 'comment_set'
     name = models.CharField(max_length=80)
     email = models.EmailField(validators=[validate_email])
     body = models.TextField()
