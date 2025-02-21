@@ -6,6 +6,9 @@
     Published : {{ post.publish }} by {{ post.author }}
 </p>
 {{ post.body|safe}}
-
+<p>
+    <a href="{% url "blog:post_share" post.id %}">Share this post</a>
+</p>
+<a href="{% url 'blog:post_list' %}" class="return-link">Return to Home</a>
 
 {% endblock %}
