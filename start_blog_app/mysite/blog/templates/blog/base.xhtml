@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}{% endblock %}</title>
+    {% load bootstrap5 %}
+    {% bootstrap_css %}
     <link rel="stylesheet" href="{% static 'css/blog.css' %}">
 </head>
 <body>
@@ -15,7 +17,7 @@
     </div>
     <div id="sidebar">
         <h2>My Blog</h2>
-        <p>This is my blog.</p>
+        <p>Welcome to my website.  Enter if you dare.  Here, I delve into the hidden corners of [your blog's main topic], exploring the questions others are afraid to ask.  Prepare to be challenged, enlightened, and perhaps even a little bit unsettled.</p>
         <div class="container">
             <a href="{% url 'blog:post_list' %}" class="return-link">Home</a>
          </div>
