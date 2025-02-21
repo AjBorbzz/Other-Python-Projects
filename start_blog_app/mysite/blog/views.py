@@ -1,11 +1,11 @@
 from django.shortcuts import render
-from .models import Post
+from .models import Post, Comment
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger, InvalidPage
 import markdown
 from django.views.generic import ListView
 from django.http import Http404
-from .forms import EmailPostForm
+from .forms import EmailPostForm, CommentForm
 from django.core.mail import send_mail
 from django.views.decorators.http import require_POST
 
@@ -103,3 +103,40 @@ def post_detail(request, year, month, day, post):
     return render(request,
                   'blog/post/detail.xhtml',
                   {'post': post})
+
+"""
+This decorator ensures that the view function post_comment can only be accessed using the HTTP POST method. 
+If a GET request (or any other method) is made to this URL, 
+Django will automatically return a "405 Method Not Allowed" error. 
+This is crucial for security and data integrity, as comment submissions 
+should typically be handled via POST to prevent issues like accidental resubmissions or 
+bookmarking the submission action.
+"""
+@require_POST
+def post_comment(request, post_id):
+    post = get_object_or_404(Post, id=post_id, status=Post.Status.PUBLISHED)
+    comment = None
+    form = CommentForm(data=request.POST)
+    """
+    Creates an instance of CommentForm.
+    CommentForm: This is a form class (likely defined in your forms.py file) that handles the data 
+    submitted in the comment form. 
+    It defines the fields the user needs to fill out (e.g., comment text, author name, email).
+    data=request.POST: This populates the form with the data submitted by the user through the POST request. 
+    request.POST is a dictionary-like object containing the submitted data.
+    """
+
+    if form.is_valid():
+        comment = form.save(commit=False)
+        # form.save(commit=False): Crucially, commit=False tells Django not to immediately save 
+        # the comment to the database. 
+        # This is because we want to add the post association to the comment before actually saving it.
+        comment.post = post
+        comment.save()
+
+
+
+    return render(request, 'blog/post/comment.xhtml',
+                  {'post': post,
+                   'form': form,
+                   'comment': comment})
