@@ -99,10 +99,14 @@ def post_detail(request, year, month, day, post):
                             publish__month=month,
                             publish__day=day
                             )
+    comments = post.comments.filter(active=True)
+    form = CommentForm()
     post.body = md.convert(post.body)
     return render(request,
                   'blog/post/detail.xhtml',
-                  {'post': post})
+                  {'post': post,
+                   'comments': comments,
+                   'form': form})
 
 """
 This decorator ensures that the view function post_comment can only be accessed using the HTTP POST method. 
