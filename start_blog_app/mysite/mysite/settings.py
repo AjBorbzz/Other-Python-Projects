@@ -119,3 +119,6 @@ EMAIL_HOST_PASSWORD = 'fqzv gmre zydi hcdr'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
+
+# Super user = djangotest
+# pw : taoako025

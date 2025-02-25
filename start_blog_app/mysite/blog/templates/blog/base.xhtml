@@ -1,3 +1,4 @@
+{% load blog_tags %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +20,9 @@
     <div id="sidebar">
         <h2>My Blog</h2>
         <p>Welcome to my website.  Enter if you dare.  Here, I delve into the hidden corners of [your blog's main topic], exploring the questions others are afraid to ask.  Prepare to be challenged, enlightened, and perhaps even a little bit unsettled.</p>
+        <p>I've written <span class="badge badge-success">{% total_posts %}</span> posts so far.</p>
+        <h3>Latest Posts</h3>
+        {% show_latest_posts 3 %}
         <div class="container">
             <a href="{% url 'blog:post_list' %}" class="return-link">Home</a>
          </div>
