@@ -119,3 +119,6 @@ EMAIL_HOST_PASSWORD = '***REMOVED-COMPROMISED-GMAIL-APP-PASSWORD***'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
+
+# Super user = djangotest
+# pw : taoako025
