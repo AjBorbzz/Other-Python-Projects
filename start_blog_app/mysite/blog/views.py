@@ -2,7 +2,6 @@ from django.shortcuts import render
 from .models import Post, Comment
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger, InvalidPage
-import markdown
 from django.views.generic import ListView
 from django.http import Http404
 from .forms import EmailPostForm, CommentForm
@@ -98,7 +97,6 @@ def post_list(request, tag_slug=None):
                    'tag': tag})
 
 def post_detail(request, year, month, day, post):
-    md = markdown.Markdown(extensions=["fenced_code"])
     post = get_object_or_404(Post,
                             status=Post.Status.PUBLISHED,
                             slug=post,
@@ -108,7 +106,6 @@ def post_detail(request, year, month, day, post):
                             )
     comments = post.comments.filter(active=True)
     form = CommentForm()
-    post.body = md.convert(post.body)
     post_tags_ids = post.tags.values_list('id', flat=True)
     similar_posts = Post.published.filter(tags__in=post_tags_ids)\
                                   .exclude(id=post.id)
