@@ -79,13 +79,13 @@ class PostListView(ListView):
             return (paginator, None, [], False)
 
 def post_list(request, tag_slug=None):
-    post_list = Post.published.all()
+    post_list = Post.published.all()[1:]
     tag = None
     if tag_slug:
         tag = get_object_or_404(Tag, slug=tag_slug)
         post_list = post_list.filter(tags__in=[tag])
     # Pagination
-    paginator = Paginator(post_list, 3)
+    paginator = Paginator(post_list, 2)
     page_number = request.GET.get('page', 1)
     try:
         posts = paginator.page(page_number)
@@ -94,7 +94,7 @@ def post_list(request, tag_slug=None):
     except EmptyPage:
         posts = paginator.page(paginator.num_pages)
     return render(request,
-                  'blog/post/list.xhtml',
+                  'blog/index.html',
                   {'posts': posts,
                    'tag': tag})
 
