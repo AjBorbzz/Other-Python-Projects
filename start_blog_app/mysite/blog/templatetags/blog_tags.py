@@ -25,5 +25,4 @@ def get_most_commented_posts(count=5):
 @register.filter(name='markdown')
 def markdown_format(text):
     md = markdown.Markdown(extensions=["fenced_code"])
-    # post.body = md.convert(post.body)
     return mark_safe(md.convert(text))
