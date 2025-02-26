@@ -3,7 +3,8 @@ from .models import Post, Comment
 from django.shortcuts import get_object_or_404
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger, InvalidPage
 from django.views.generic import ListView
-from django.contrib.postgres.search import SearchVector, SearchQuery, SearchRank
+from django.contrib.postgres.search import TrigramSimilarity, TrigramWordSimilarity
+from django.db.models import Q
 from django.http import Http404
 from .forms import EmailPostForm, CommentForm, SearchForm
 from django.core.mail import send_mail
@@ -166,8 +167,9 @@ def post_search(request):
         if form.is_valid():
             query = form.cleaned_data['query']
             results = Post.published.annotate(
-                search=SearchVector('title','body')
-            ).filter(search=query)
+                                            similarity=TrigramWordSimilarity(query, 'title'),
+                                            contains=TrigramWordSimilarity(query,'body')
+                                    ).filter(Q(similarity__gt=0.4)|Q(contains__gt=0.5)).order_by('-similarity')
     return render(request,'blog/post/search.xhtml',
                       {'form': form,
                        'query': query,
