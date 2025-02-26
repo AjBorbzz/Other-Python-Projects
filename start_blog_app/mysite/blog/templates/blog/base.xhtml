@@ -21,6 +21,10 @@
         <h2>My Blog</h2>
         <p>Welcome to my website.  Enter if you dare.  Here, I delve into the hidden corners of [your blog's main topic], exploring the questions others are afraid to ask.  Prepare to be challenged, enlightened, and perhaps even a little bit unsettled.</p>
         <p>I've written <span class="badge badge-success">{% total_posts %}</span> posts so far.</p>
+        
+        <p>
+            <a href="{% url 'blog:post_feed' %}">Subscribe to my RSS feed</a>
+        </p>
         <h3>Latest Posts</h3>
         {% show_latest_posts 3 %}
         <h3>Most Commented Posts</h3>
