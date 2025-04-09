@@ -1,0 +1,5 @@
+This Python project is a lightweight PDF Inspector tool built using **PyMuPDF** (also known as fitz). It allows users to extract and analyze key elements from PDF documents, including text content, embedded images, hyperlinks, metadata, bookmarks, and detailed page information. The tool is ideal for document automation workflows, legal document analysis, educational content processing, and any scenario where structured PDF data extraction is required.
+
+
+
+**PyMuPDF** is a Python binding for MuPDF, a high-performance, lightweight PDF and XPS viewer. It is widely used for extracting text, images, and metadata from PDFs, analyzing document structure, searching for keywords, redacting sensitive content, and converting PDFs to images or vice versa. PyMuPDF is particularly useful for building document parsers, extracting data for analysis, creating searchable indexes, and automating redaction tasks.
