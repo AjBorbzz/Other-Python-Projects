@@ -1,0 +1,13 @@
+asgiref==3.8.1
+beautifulsoup4==4.13.3
+Django==4.2.20
+django-bootstrap-v5==1.0.11
+django-bootstrap5==25.1
+django-taggit==6.1.0
+dotenv==0.9.9
+Markdown==3.7
+psycopg2-binary==2.9.10
+python-dotenv==1.1.0
+soupsieve==2.6
+sqlparse==0.4.2
+typing_extensions==4.13.1
