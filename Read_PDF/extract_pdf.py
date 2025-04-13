@@ -1,6 +1,7 @@
 import pymupdf
+from pprint import pprint
 
-doc = pymupdf.open("Feb2025.pdf") # open a document
+doc = pymupdf.open("Montero Sport Brochure.pdf") # open a document
 
 for page_index in range(len(doc)): # iterate over pdf pages
     page = doc[page_index] # get the page
