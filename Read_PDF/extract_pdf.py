@@ -1,26 +1,10 @@
 import pymupdf
-from pprint import pprint
 
-doc = pymupdf.open("whisper.pdf") # open a document
-
-# locate and extract any tables on page
-# display number of found tables
-
-for page_index in range(len(doc)):
-    page = doc[page_index] 
-    tabs = page.find_tables() 
-    print(f"{len(tabs.tables)} found on {page}") 
-
-    if tabs.tables:  # at least one table found?
-        pprint(tabs[0].extract())  # print content of first table
-
-
+doc = pymupdf.open("Feb2025.pdf") # open a document
 
 for page_index in range(len(doc)): # iterate over pdf pages
     page = doc[page_index] # get the page
     image_list = page.get_images()
-
-    table = page.find_tables()
 
     # print the number of images found on the page
     if image_list:
@@ -37,6 +21,3 @@ for page_index in range(len(doc)): # iterate over pdf pages
 
         pix.save("page_%s-image_%s.png" % (page_index, image_index)) # save the image as png
         pix = None
-
-
-        
