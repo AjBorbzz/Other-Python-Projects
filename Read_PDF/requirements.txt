@@ -1,0 +1,5 @@
+packaging==24.2
+pillow==11.1.0
+PyMuPDF==1.25.5
+pymupdf4llm==0.0.21
+pytesseract==0.3.13
