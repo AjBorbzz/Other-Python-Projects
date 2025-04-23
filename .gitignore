@@ -6,3 +6,4 @@ node_modules/
 .log
 spark-3.5.3-bin-hadoop3/
 .env
+**.pdf
