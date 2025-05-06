@@ -9,3 +9,4 @@ spark-3.5.3-bin-hadoop3/
 **.pdf
 **/*.venv
 **/*.sqlite3
+**/*.pyc
