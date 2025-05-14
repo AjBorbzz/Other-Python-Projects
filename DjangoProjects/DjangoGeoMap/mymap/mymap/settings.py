@@ -64,9 +64,9 @@ WSGI_APPLICATION = "mymap.wsgi.application"
 # import os
 
 # GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
-# # GDAL_LIBRARY_PATH = "/opt/homebrew/Cellar/gdal/3.11.0/lib/libgdal.dylib"
+GDAL_LIBRARY_PATH = "/opt/homebrew/Cellar/gdal/3.11.0/lib/libgdal.dylib"
 # SPATIALITE_LIBRARY_PATH = "/opt/homebrew/lib/mod_spatialite.dylib"
-
+SPATIALITE_LIBRARY_PATH="/opt/homebrew/lib/mod_spatialite.8.dylib"
 ## GDAL will be continued in Ubuntu Environment
 
 
@@ -74,9 +74,9 @@ WSGI_APPLICATION = "mymap.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    "default": {
-        "ENGINE": "django.contrib.gis.db.backends.spatialite",
-        "NAME": BASE_DIR / "db.sqlite3",
+    'default': {
+        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 
