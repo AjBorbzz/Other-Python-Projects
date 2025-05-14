@@ -63,8 +63,9 @@ WSGI_APPLICATION = "mymap.wsgi.application"
 # GDAL Configuration
 import os
 
-os.environ["GDAL_LIBRARY_PATH"] = "/opt/homebrew/Cellar/gdal/3.11.0/lib/libgdal.dylib"
-os.environ["SPATIALITE_LIBRARY_PATH"] = "/opt/homebrew/lib/mod_spatialite.dylib"
+GDAL_LIBRARY_PATH = '/opt/homebrew/opt/gdal/lib/libgdal.dylib'
+# GDAL_LIBRARY_PATH = "/opt/homebrew/Cellar/gdal/3.11.0/lib/libgdal.dylib"
+SPATIALITE_LIBRARY_PATH = "/opt/homebrew/lib/mod_spatialite.dylib"
 
 
 
