@@ -1,3 +1,9 @@
-from django.db import models
+from django.contrib.gis.db import models
 
-# Create your models here.
+
+class Marker(models.Model):
+    name = models.CharField()
+    location = models.PointField()
+
+    def __str__(self):
+        return str(self.name)

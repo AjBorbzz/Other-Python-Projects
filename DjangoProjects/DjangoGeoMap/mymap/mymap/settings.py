@@ -65,7 +65,7 @@ WSGI_APPLICATION = "mymap.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
+        "ENGINE": "django.contrib.gis.db.backedns.spatialite",
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
