@@ -24,8 +24,9 @@ INSTALLED_APPS = [
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
-    "django.contrib.messages",
+    "django.contrib.messages",  
     "django.contrib.staticfiles",
+    "django.contrib.gis",
     "markers"
 ]
 
@@ -59,6 +60,13 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "mymap.wsgi.application"
 
+# GDAL Configuration
+import os
+
+os.environ["GDAL_LIBRARY_PATH"] = "/opt/homebrew/Cellar/gdal/3.11.0/lib/libgdal.dylib"
+os.environ["SPATIALITE_LIBRARY_PATH"] = "/opt/homebrew/lib/mod_spatialite.dylib"
+
+
 
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
@@ -69,6 +77,9 @@ DATABASES = {
         "NAME": BASE_DIR / "db.sqlite3",
     }
 }
+
+
+
 
 
 # Password validation
