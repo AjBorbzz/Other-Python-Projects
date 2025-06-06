@@ -2,6 +2,7 @@ from fastapi import FastAPI, HTTPException, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 from datetime import datetime
+from app import PhishingRequest, process_phishing_detection
 
 app = FastAPI(title="Phishing Detection Service", version="1.0.0")
 
