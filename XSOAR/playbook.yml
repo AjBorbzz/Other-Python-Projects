@@ -1,0 +1,79 @@
+# Email Classification Playbook
+name: Email Auto-Classification
+starttaskid: "0"
+tasks:
+  "0":
+    id: "0"
+    taskid: 1
+    type: start
+    
+  "1":
+    id: "1" 
+    taskid: 2
+    type: regular
+    task:
+      id: 1
+      name: Extract Email Data
+      script: "EmailExtractor"
+    nexttasks:
+      '#none#':
+      - "2"
+      
+  "2":
+    id: "2"
+    taskid: 3
+    type: regular
+    task:
+      id: 2
+      name: Classify Email
+      script: "EmailClassificationPreProcessor"
+      scriptarguments:
+        subject: ${incident.emailsubject}
+        body: ${incident.emailbody}
+        sender: ${incident.emailfrom}
+        attachments: ${incident.attachment}
+    nexttasks:
+      '#none#':
+      - "3"
+      
+  "3":
+    id: "3"
+    taskid: 4
+    type: condition
+    task:
+      id: 3
+      name: Check Classification Confidence
+    condition:
+      - - operator: greaterThanOrEqual
+          left:
+            value:
+              simple: ${EmailClassification.confidence}
+          right:
+            value:
+              simple: "0.7"
+    nexttasks:
+      "yes":
+      - "4"
+      "no":
+      - "5"
+      
+  "4":
+    id: "4"
+    taskid: 5
+    type: regular
+    task:
+      id: 4
+      name: Auto-Route Incident
+      script: "SetIncident"
+      scriptarguments:
+        type: ${EmailClassification.incident_type}
+        severity: ${EmailClassification.severity}
+        
+  "5":
+    id: "5"
+    taskid: 6
+    type: regular  
+    task:
+      id: 5
+      name: Manual Review Required
+      script: "AssignAnalyst"
