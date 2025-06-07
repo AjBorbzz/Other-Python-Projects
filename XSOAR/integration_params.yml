@@ -1,0 +1,36 @@
+configuration:
+- display: AI Service Endpoint
+  name: ai_endpoint
+  type: 0
+  required: false
+  defaultvalue: "https://your-lambda-endpoint.amazonaws.com/classify"
+
+- display: AI Service API Key
+  name: ai_api_key
+  type: 4
+  required: false
+  hidden: true
+
+- display: Confidence Threshold
+  name: confidence_threshold
+  type: 0
+  required: false
+  defaultvalue: "0.7"
+
+- display: Enable Rule-Based Classification
+  name: enable_rules
+  type: 8
+  required: false
+  defaultvalue: true
+
+- display: Enable ML Classification
+  name: enable_ml
+  type: 8
+  required: false
+  defaultvalue: true
+
+- display: Enable GenAI Classification
+  name: enable_genai
+  type: 8
+  required: false
+  defaultvalue: true
