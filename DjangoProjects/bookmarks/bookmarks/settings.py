@@ -114,3 +114,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #JohnnyShins
 #taoako025
+
+# used the names of the URLs defined in the accounts/urls.py in the path()
+LOGIN_REDIRECT_URL = 'dashboard'
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
