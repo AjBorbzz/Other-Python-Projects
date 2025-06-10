@@ -35,3 +35,7 @@ def dashboard(request):
     return render(request,
                   'account/dashboard.html',
                   {'section': 'dashboard'})   # Use this to highlight the current section in the main menu of the site.
+
+
+def register():
+    pass
