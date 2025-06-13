@@ -54,3 +54,6 @@ def register(request):
     return render(request, 
                   'account/register.html',
                   {'user_form': user_form})
+
+def edit():
+    pass
