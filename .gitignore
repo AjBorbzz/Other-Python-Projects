@@ -10,3 +10,7 @@ spark-3.5.3-bin-hadoop3/
 **/*.venv
 **/*.sqlite3
 **/*.pyc
+**/*.json
+Other-Python-Projects/PyGoogle/credentials.json
+Other-Python-Projects/PyGoogle/token.json
+*.json
