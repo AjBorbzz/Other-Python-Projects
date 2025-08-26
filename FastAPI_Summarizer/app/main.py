@@ -69,3 +69,17 @@ def update_item(item_id: int, payload: ItemIn = Body(...)):
             updated = ItemOut(id=item.id, **payload.model_dump())
             DB[idx] = updated
     raise HTTPException(status_code=404, detail="Item not found")
+
+
+@app.get("/sync")
+def sync_endpoint():
+    # Regular blocking function
+    import time
+    time.sleep(2)   # blocks the whole server worker
+    return {"message": "Finished sync"}
+
+@app.get("/async")
+async def async_endpoint():
+    import asyncio
+    await asyncio.sleep(2)  # frees the worker for others
+    return {"message": "Finished async"}
