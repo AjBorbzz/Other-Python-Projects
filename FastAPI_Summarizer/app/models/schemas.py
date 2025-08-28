@@ -3,7 +3,7 @@ from typing import List, Optional
 
 
 class SummarizeRequest(BaseModel):
-    incident: str = Field(..., description="Incident Correlation ID")
+    incident_id: str = Field(..., description="Incident Correlation ID")
     logs: List[str] = Field(..., description="Raw log lines (pre-chunked)")
     max_tokens: int = 1024
 
