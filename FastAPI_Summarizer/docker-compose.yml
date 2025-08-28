@@ -1,0 +1,27 @@
+version: "3.9"
+services:
+api:
+image: python:3.11-slim
+working_dir: /app
+command: bash -lc "pip install --upgrade pip && pip install -e . && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+volumes:
+- ./:/app
+env_file: .env
+ports:
+- "8000:8000"
+depends_on:
+- ollama
+
+
+ollama:
+image: ollama/ollama:latest
+ports:
+- "11434:11434"
+volumes:
+- ollama_data:/root/.ollama
+environment:
+- OLLAMA_KEEP_ALIVE=24h
+
+
+volumes:
+ollama_data:
