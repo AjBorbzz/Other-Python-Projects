@@ -1,1 +1,2 @@
-Lessons for FastAPI from basic to advanced.
+# FastAPI SIEM Log Summarizer for Private LLM
+
