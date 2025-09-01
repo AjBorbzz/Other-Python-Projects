@@ -7,3 +7,4 @@ Develop API-driven microservices in Python with
 * Test APIs using property-based testing and API testing frameworks: Dredd and Schemathesis.
 
 
+In this project, Orders API, I demonstrate how to place orders, update and retrieve their details, or cancel them. 

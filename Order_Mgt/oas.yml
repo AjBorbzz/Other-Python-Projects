@@ -1,0 +1,18 @@
+OrderItemSchema:
+  type: object
+  required:
+    - product
+    - size
+  properties:
+    product:
+      type: string
+    size:
+      type: string
+      enum:
+        - small
+        - medium
+        - big
+    quantity:
+      type: integer
+      default: 1
+      minimum: 1
