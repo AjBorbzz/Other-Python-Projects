@@ -14,3 +14,5 @@ spark-3.5.3-bin-hadoop3/
 Other-Python-Projects/PyGoogle/credentials.json
 Other-Python-Projects/PyGoogle/token.json
 *.json
+**/*.poc_venv
+*.poc_venv
