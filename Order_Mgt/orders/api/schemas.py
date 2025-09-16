@@ -11,3 +11,11 @@ class OrderItemSchema(BaseModel):
     quantity: int = Optional[conint(ge=1, strict=True)] = 1
     model_config = {"extra": "forbid"}
 
+class CreateOrderSchema(BaseModel):
+    order: List[OrderItemSchema]
+    model_config = {"extra": "forbid"}
+
+class GetOrderSchema(CreateOrderSchema):
+    id: UUID
+    created: datetime
+    status: StatusEnum
