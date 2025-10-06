@@ -48,3 +48,45 @@ def is_code_like(line: str) -> bool:
         or "\\\\" in line 
         or line.strip().startswith("C:")
     )
+
+def process_body_lines(body_lines: list[str]) -> list[str]:
+    """Convert body lines into simplified HTML."""
+    sec_html = []
+    buffer_para = []
+    pre_lines = []
+    in_pre = False
+    dl_open = False
+
+    for line in body_lines:
+        if is_code_like(line):
+            flush_paragraph(buffer_para, sec_html)
+            if dl_open:
+                sec_html.append("</dl>")
+                dl_open = False
+            pre_lines.append(line)
+            in_pre = True
+            continue 
+        match = re.match(r"^([^:]+):\s*(.)$", line)
+        if match: 
+            flush_paragraph(buffer_para, sec_html)
+            if in_pre:
+                flush_pre(pre_lines, sec_html)
+                in_pre = False
+            if not dl_open:
+                sec_html.append("<dl>")
+                dl_open = True
+            key, val = match.group(1).strip(), match.group(2).strip()
+            sec_html.append(f"<dt>{escape(key)}</dt><dd>{escape(val)}</dd>")
+        else:
+            if dl_open:
+                sec_html.append("</dl>")
+                dl_open = False
+            buffer_para.append(line)
+
+    flush_paragraph(buffer_para, sec_html)
+    if in_pre:
+        flush_pre(pre_lines, sec_html)
+    if dl_open:
+        sec_html.append("</dl>")
+
+    return sec_html
