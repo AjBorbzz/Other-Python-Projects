@@ -90,3 +90,30 @@ def process_body_lines(body_lines: list[str]) -> list[str]:
         sec_html.append("</dl>")
 
     return sec_html
+
+def convert_text_to_html(text: str) -> str:
+    """Main converter"""
+    sections = split_sections(text)
+    html_parts = []
+
+    for sec in sections:
+        sec = sec.strip()
+        if not sec: 
+            continue
+
+        lines = sec.splitlines()
+        title, body_lines = extract_title_and_body(lines)
+
+        sec_html = []
+        if title:
+            sec_html.append(f"<h2>{escape(title)}</h2>")
+        sec_html.extend(process_body_lines(body_lines))
+        html_parts.append("".join(sec_html))
+
+    return (
+        "<!doctype html><html><head>" \
+        "<meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+        "</head><body>"
+        + "<hr />".join(html_parts) + 
+        "</body></html>"
+    )
