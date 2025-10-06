@@ -25,3 +25,18 @@ def extract_title_and_body(lines: list[str]) -> tuple[str | None, list[str]]:
         if line.strip():
             return line.strip(), lines[i + 1: ]
     return None, []
+
+def flush_paragraph(buffer: list[str], html_parts: list[str]) -> None:
+    """Flush paragragh buffer into HTML and clear it."""
+    if buffer:
+        para_text = " ".join(line.strip() for line in buffer)
+        html_parts.append(f"<p>{escape(para_text)}</p>")
+        buffer.clear()
+
+def flush_pre(pre_lines: list[str], html_parts: list[str]) -> None:
+    """Flush preformatted block into HTML and clear it."""
+    if pre_lines:
+        html_parts.append(f"<pre>{escape('\n'.join(pre_lines))}</pre>")
+        pre_lines.clear()
+
+
