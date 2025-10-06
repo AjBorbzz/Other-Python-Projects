@@ -40,3 +40,11 @@ def flush_pre(pre_lines: list[str], html_parts: list[str]) -> None:
         pre_lines.clear()
 
 
+def is_code_like(line: str) -> bool:
+    """Check if a line looks like code/log output or a Windows path."""
+    return (
+        re.match(r"^\s",line)
+        or re.search(r"[A-Za-z]:\\", line)
+        or "\\\\" in line 
+        or line.strip().startswith("C:")
+    )
