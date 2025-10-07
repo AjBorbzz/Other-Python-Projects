@@ -128,3 +128,19 @@ def clean_text_from_ruleblock(text: str):
     pattern = re.compile(r'(Rule Block\s+\d+\s+Raw\s+Logs)\n?(.*?)\n(?=Rule Block|\Z)', re.DOTALL)
     data = re.search(pattern, text)
     return re.sub(r'Rule Block 1 Raw Logs.*', '', text, flags=re.DOTALL)
+
+def chunk_text(text: str, chunksize: int = 1600) -> list:
+    """Chunk Text to convert to html body"""
+    return [text[i: i+chunksize] for i in range(0, len(text), chunksize)]
+
+if __name__ == "__main__":
+    sample_text = """<Write your escalation notes here to convert to html>"""
+    html = convert_text_to_html(sample_text.strip())
+    with open(f"escalation_notes.html", "w", encoding='utf-8') as f:
+        f.write(html)
+
+
+    """Chunk option:
+    
+    
+    """
