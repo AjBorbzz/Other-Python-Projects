@@ -140,7 +140,13 @@ if __name__ == "__main__":
         f.write(html)
 
 
-    """Chunk option:
+    ### Chunk option:
+    # chunks = chunk_text(sample_text)
+    # for idx, item in enumerate(chunks, start=1):
+    #     context = item
+    #     if idx == 1:
+    #         context = item + "\n\nAdditional Information will be provided shortly...\n"
+    #     with open(f"escalation_{idx}.txt", "w", encoding="utf-8") as f:
+    #         f.write(context)
     
-    
-    """
+    ####
