@@ -142,6 +142,7 @@ if __name__ == "__main__":
 
     ### Chunk option:
     # chunks = chunk_text(sample_text)
+    # first option:
     # for idx, item in enumerate(chunks, start=1):
     #     context = item
     #     if idx == 1:
@@ -149,4 +150,9 @@ if __name__ == "__main__":
     #     with open(f"escalation_{idx}.txt", "w", encoding="utf-8") as f:
     #         f.write(context)
     
+
+    ### Combination
+    # with open(f"escalation_combined.txt", "w", encoding="utf-8") as f:
+    #     f.write(''.join(chunks[0])[0:-53] + ''.join(chunks[1:]))
+
     ####
