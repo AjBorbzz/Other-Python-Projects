@@ -122,3 +122,9 @@ def check_html_body_length(html_body: str):
     """Checks the length of html body"""
     query = urllib.parse.urlencode({"html": html_body})
     print(f"Converted HTML: {len(query)}")
+
+def clean_text_from_ruleblock(text: str):
+    """An incident detail often has a ruleblock text in it. Sometimes this are not required to include in the html body"""
+    pattern = re.compile(r'(Rule Block\s+\d+\s+Raw\s+Logs)\n?(.*?)\n(?=Rule Block|\Z)', re.DOTALL)
+    data = re.search(pattern, text)
+    return re.sub(r'Rule Block 1 Raw Logs.*', '', text, flags=re.DOTALL)
