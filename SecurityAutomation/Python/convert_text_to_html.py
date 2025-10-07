@@ -117,3 +117,8 @@ def convert_text_to_html(text: str) -> str:
         + "<hr />".join(html_parts) + 
         "</body></html>"
     )
+
+def check_html_body_length(html_body: str):
+    """Checks the length of html body"""
+    query = urllib.parse.urlencode({"html": html_body})
+    print(f"Converted HTML: {len(query)}")
