@@ -128,3 +128,57 @@ class SecretDetector:
         
         visible_chars = 4
         return secret[:visible_chars] + '*' * (len(secret) - visible_chars * 2) + secret[-visible_chars:]
+    
+    def generate_report(self, format: str = 'text') -> str:
+        """
+        Generate a report of all findings.
+        
+        Args:
+            format: Output format ('text' or 'json')
+            
+        Returns:
+            Formatted report string
+        """
+        if format == 'json':
+            import json
+            return json.dumps(self.findings, indent=2)
+        
+        # Text format
+        report = []
+        report.append("=" * 80)
+        report.append("SECRET PATTERN DETECTION REPORT")
+        report.append("=" * 80)
+        report.append(f"\nTotal findings: {len(self.findings)}\n")
+        
+        if not self.findings:
+            report.append("No secrets detected!")
+            return '\n'.join(report)
+        
+        # Group by source
+        by_source = {}
+        for finding in self.findings:
+            source = finding['source']
+            if source not in by_source:
+                by_source[source] = []
+            by_source[source].append(finding)
+        
+        for source, findings in by_source.items():
+            report.append(f"\n[{source}]")
+            report.append("-" * 80)
+            for f in findings:
+                report.append(f"  Line {f['line']}: {f['type']}")
+                report.append(f"    Match: {f['match']}")
+                report.append(f"    Context: {f['context'][:80]}...")
+                report.append("")
+        
+        # Summary by type
+        report.append("\nSUMMARY BY TYPE:")
+        report.append("-" * 80)
+        type_counts = {}
+        for f in self.findings:
+            type_counts[f['type']] = type_counts.get(f['type'], 0) + 1
+        
+        for secret_type, count in sorted(type_counts.items(), key=lambda x: x[1], reverse=True):
+            report.append(f"  {secret_type}: {count}")
+        
+        return '\n'.join(report)
