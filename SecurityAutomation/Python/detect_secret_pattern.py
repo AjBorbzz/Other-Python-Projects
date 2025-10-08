@@ -112,3 +112,19 @@ class SecretDetector:
                     all_findings.extend(findings)
         
         return all_findings
+
+    def _mask_secret(self, secret: str) -> str:
+        """
+        Mask a secret for display purposes.
+        
+        Args:
+            secret: The secret string to mask
+            
+        Returns:
+            Masked version of the secret
+        """
+        if len(secret) <= 8:
+            return '*' * len(secret)
+        
+        visible_chars = 4
+        return secret[:visible_chars] + '*' * (len(secret) - visible_chars * 2) + secret[-visible_chars:]
