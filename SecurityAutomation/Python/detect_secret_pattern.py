@@ -88,3 +88,27 @@ class SecretDetector:
             print(f"Error reading file {filepath}: {e}", file=sys.stderr)
             return []
     
+    def scan_directory(self, directory: str, extensions: List[str] = None) -> List[Dict]:
+        """
+        Recursively scan a directory for secrets.
+        
+        Args:
+            directory: Path to directory to scan
+            extensions: List of file extensions to scan (e.g., ['.py', '.js'])
+            
+        Returns:
+            List of finding dictionaries
+        """
+        if extensions is None:
+            extensions = ['.py', '.js', '.json', '.yaml', '.yml', '.env', 
+                         '.txt', '.md', '.sh', '.conf', '.config', '.xml']
+        
+        all_findings = []
+        for root, _, files in os.walk(directory):
+            for file in files:
+                if any(file.endswith(ext) for ext in extensions):
+                    filepath = os.path.join(root, file)
+                    findings = self.scan_file(filepath)
+                    all_findings.extend(findings)
+        
+        return all_findings
