@@ -69,3 +69,22 @@ class SecretDetector:
         
         self.findings.extend(local_findings)
         return local_findings
+    
+    def scan_file(self, filepath: str) -> List[Dict]:
+        """
+        Scan a file for secrets.
+        
+        Args:
+            filepath: Path to the file to scan
+            
+        Returns:
+            List of finding dictionaries
+        """
+        try:
+            with open(filepath, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+            return self.scan_text(content, filepath)
+        except Exception as e:
+            print(f"Error reading file {filepath}: {e}", file=sys.stderr)
+            return []
+    
