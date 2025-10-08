@@ -36,3 +36,36 @@ class SecretDetector:
             'Email Address': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
             'Generic Password Pattern': r'(?i)password[\s]*=[\s]*[\'"][^\'"]{6,}[\'"]',
         }
+
+        self.findings = []
+
+    def scan_text(self, text: str, source: str ="input") -> List[Dict]:
+        """
+        Scan text for secrets and return findings.
+        
+        Args:
+            text: The text content to scan
+            source: Source identifier (filename or description)
+            
+        Returns:
+            List of finding dictionaries
+        """
+        local_findings = []
+        lines = text.split('\n')
+        
+        for line_num, line in enumerate(lines, 1):
+            for pattern_name, pattern in self.patterns.items():
+                matches = re.finditer(pattern, line)
+                for match in matches:
+                    finding = {
+                        'type': pattern_name,
+                        'source': source,
+                        'line': line_num,
+                        'match': self._mask_secret(match.group(0)),
+                        'full_match': match.group(0),
+                        'context': line.strip()[:100]  # First 100 chars of line
+                    }
+                    local_findings.append(finding)
+        
+        self.findings.extend(local_findings)
+        return local_findings
