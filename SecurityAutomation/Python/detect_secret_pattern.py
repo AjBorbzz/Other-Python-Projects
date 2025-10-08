@@ -19,7 +19,7 @@ class SecretDetector:
         """Initialize the detector with pattern definitions."""
         self.patterns = {
             'AWS Access Key': r'(?:A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}',
-            'AWS Secret Key': r'(?i)aws(.{0,20})?['\"][0-9a-zA-Z\/+]{40}['\"]',
+            'AWS Secret Key': r"(?i)aws(.{0,20})?['\"][0-9a-zA-Z\/+]{40}['\"]",
             'GitHub Token': r'ghp_[0-9a-zA-Z]{36}|gho_[0-9a-zA-Z]{36}|ghu_[0-9a-zA-Z]{36}|ghs_[0-9a-zA-Z]{36}|ghr_[0-9a-zA-Z]{36}',
             'Generic API Key': r'(?i)(api[_-]?key|apikey)[\s]*[=:]\s*[\'"][0-9a-zA-Z\-_]{20,}[\'"]',
             'Generic Secret': r'(?i)(secret|password|passwd|pwd)[\s]*[=:]\s*[\'"][^\'"]{8,}[\'"]',
