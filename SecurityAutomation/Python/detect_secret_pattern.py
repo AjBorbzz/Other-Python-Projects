@@ -182,3 +182,83 @@ class SecretDetector:
             report.append(f"  {secret_type}: {count}")
         
         return '\n'.join(report)
+    
+    def get_summary(self) -> Dict:
+        """
+        Get a summary of findings.
+        
+        Returns:
+            Dictionary with summary statistics
+        """
+        type_counts = {}
+        for f in self.findings:
+            type_counts[f['type']] = type_counts.get(f['type'], 0) + 1
+        
+        return {
+            'total_findings': len(self.findings),
+            'unique_sources': len(set(f['source'] for f in self.findings)),
+            'findings_by_type': type_counts
+        }
+
+
+def main():
+    """Main function for CLI usage."""
+    parser = argparse.ArgumentParser(
+        description='Detect hardcoded secrets and sensitive information in files',
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Examples:
+  # Scan a single file
+  python secret_detector.py -f config.py
+  
+  # Scan a directory
+  python secret_detector.py -d ./src
+  
+  # Scan with JSON output
+  python secret_detector.py -f config.py -o json
+  
+  # Scan from stdin
+  echo "api_key = 'sk_live_abcd1234efgh5678'" | python secret_detector.py -s
+        """
+    )
+    
+    parser.add_argument('-f', '--file', help='Scan a single file')
+    parser.add_argument('-d', '--directory', help='Scan a directory recursively')
+    parser.add_argument('-s', '--stdin', action='store_true', help='Read from stdin')
+    parser.add_argument('-o', '--output', choices=['text', 'json'], default='text',
+                       help='Output format (default: text)')
+    parser.add_argument('-e', '--extensions', nargs='+', 
+                       help='File extensions to scan (e.g., .py .js)')
+    
+    args = parser.parse_args()
+    
+    # Initialize detector
+    detector = SecretDetector()
+    
+    # Determine scan mode
+    if args.stdin:
+        text = sys.stdin.read()
+        detector.scan_text(text, "stdin")
+    elif args.file:
+        if not os.path.exists(args.file):
+            print(f"Error: File '{args.file}' not found", file=sys.stderr)
+            sys.exit(1)
+        detector.scan_file(args.file)
+    elif args.directory:
+        if not os.path.isdir(args.directory):
+            print(f"Error: Directory '{args.directory}' not found", file=sys.stderr)
+            sys.exit(1)
+        detector.scan_directory(args.directory, args.extensions)
+    else:
+        parser.print_help()
+        sys.exit(1)
+    
+    # Generate and print report
+    print(detector.generate_report(args.output))
+    
+    # Exit with error code if secrets found
+    sys.exit(1 if detector.findings else 0)
+
+
+if __name__ == '__main__':
+    main()
