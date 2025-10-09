@@ -2,9 +2,6 @@
 """
 Hash Calculator & File Integrity Checker
 A utility script for calculating file hashes, verifying integrity, and generating hash manifests.
-
-Author: Security Automation Engineer
-Usage: python hash_calculator.py [options]
 """
 
 import hashlib
