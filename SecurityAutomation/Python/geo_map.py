@@ -13,18 +13,11 @@ Useful for:
 import logging
 from typing import List, Dict, Set, Optional
 
-# ---------------------------------------------------------------------------
-# CONFIGURATION
-# ---------------------------------------------------------------------------
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s"
 )
-
-# ---------------------------------------------------------------------------
-# CORE UTILITIES
-# ---------------------------------------------------------------------------
 
 def extract_keys(dict_list: List[Dict]) -> Set[str]:
     """Flatten and return all keys from a list of dictionaries."""
@@ -122,10 +115,6 @@ def auto_detect_prefix(dict_list: List[Dict]) -> Optional[str]:
                 return parts[0] + " "
     return None
 
-
-# ---------------------------------------------------------------------------
-# EXAMPLE USAGE
-# ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
     list1 = [
