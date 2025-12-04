@@ -9,9 +9,6 @@ from geo_mapper import (
     auto_detect_prefix,
 )
 
-# ----------------------------------------------------------------------
-# Fixtures
-# ----------------------------------------------------------------------
 
 @pytest.fixture
 def list_a_unprefixed():
@@ -42,10 +39,6 @@ def list_b_prefixed_partial():
     ]
 
 
-# ----------------------------------------------------------------------
-# extract_keys
-# ----------------------------------------------------------------------
-
 def test_extract_keys_basic(list_b_prefixed):
     keys = extract_keys(list_b_prefixed)
     assert keys == {"US North", "US South", "US Central"}
@@ -54,10 +47,6 @@ def test_extract_keys_basic(list_b_prefixed):
 def test_extract_keys_empty():
     assert extract_keys([]) == set()
 
-
-# ----------------------------------------------------------------------
-# auto_detect_prefix
-# ----------------------------------------------------------------------
 
 def test_auto_detect_prefix_detects(list_b_prefixed):
     prefix = auto_detect_prefix(list_b_prefixed)
@@ -75,9 +64,6 @@ def test_auto_detect_prefix_works_with_other_prefix():
     assert auto_detect_prefix(data) == "EU "
 
 
-# ----------------------------------------------------------------------
-# inverse_mapping
-# ----------------------------------------------------------------------
 
 def test_inverse_mapping_basic(list_b_prefixed):
     out = inverse_mapping(list_b_prefixed, prefix="US ")
@@ -94,10 +80,6 @@ def test_inverse_mapping_no_prefix_present():
     # No change if prefix not present
     assert inverse_mapping(data, prefix="US ") == data
 
-
-# ----------------------------------------------------------------------
-# normalize_keys
-# ----------------------------------------------------------------------
 
 def test_normalize_keys_maps_all_with_detected_prefix(list_a_unprefixed, list_b_prefixed):
     prefix = auto_detect_prefix(list_b_prefixed)
@@ -129,9 +111,6 @@ def test_normalize_keys_handles_missing_in_reference(list_a_unprefixed, list_b_p
     ]
 
 
-# ----------------------------------------------------------------------
-# map_if_missing
-# ----------------------------------------------------------------------
 
 def test_map_if_missing_only_maps_when_absent(list_a_unprefixed, list_b_prefixed_partial):
     # "US North" missing in list_b_prefixed_partial, so only that one gets mapped
@@ -149,10 +128,6 @@ def test_map_if_missing_keeps_all_when_present(list_a_unprefixed, list_b_prefixe
     out = map_if_missing(list_a_unprefixed, list_b_prefixed, prefix="US ")
     assert out == list_a_unprefixed
 
-
-# ----------------------------------------------------------------------
-# Round-trip & edge cases
-# ----------------------------------------------------------------------
 
 def test_normalize_then_inverse_roundtrip(list_a_unprefixed, list_b_prefixed):
     prefix = auto_detect_prefix(list_b_prefixed)
