@@ -83,3 +83,24 @@ IDENTIFIER_FIELDS = {
     "computer_name",
     "account",
 }
+
+IPV4_RE = re.compile(r"\b(?:\d{1,3}\.){3}\d{1,3}\b")
+EMAIL_RE = re.compile(r"\b[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[A-Za-z]{2,}\b")
+URL_RE = re.compile(r"\bhttps?://[^\s]+")
+TOKEN_RE = re.compile(r"\b[a-zA-Z0-9_\-]{20,}\b")
+
+def normalize_key(key: str) -> str:
+    base = key.strip().lower()
+    base = base.replace(" ", "_").replace(".", "_")
+    return FIELD_MAP.get(base, base)
+
+def mask_string_value(value: str) -> Tuple[str, bool]:
+    original = value
+    masked = value 
+
+    masked = IPV4_RE.sub("[IP]", masked)
+    masked = EMAIL_RE.sub("[EMAIL]", masked)
+    masked = URL_RE.sub("[URL]", masked)
+    masked = TOKEN_RE.sub("[TOKEN]", masked)
+
+    return masked, masked != original
