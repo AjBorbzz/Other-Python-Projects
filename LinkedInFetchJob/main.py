@@ -81,3 +81,22 @@ class Query:
         self.page = int(query_obj.get("page") or 0)
         self.has_verification = bool(query_obj.get("has_verification", False))
         self.under_10_applicants = bool(query_obj.get("under_10_applicants", False))
+        
+    def get_date_since_posted(self) -> str:
+        date_range = {
+            "past month": "r2592000",
+            "past week": "r604800",
+            "24hr": "r86400",
+        }
+        return date_range.get(self.date_since_posted.lower(), "")
+    
+    def get_experience_level(self) -> str:
+        experience_range = {
+            "internship": "1",
+            "entry level": "2",
+            "associate": "3",
+            "senior": "4",
+            "director": "5",
+            "executive": "6",
+        }
+        return experience_range.get(self.experience_level.lower(), "")
