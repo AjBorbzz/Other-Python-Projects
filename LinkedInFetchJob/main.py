@@ -189,3 +189,147 @@ class Query:
 
     def get_cache_key(self) -> str:
         return f"{self.url(0)}_limit:{self.limit}"
+    
+
+    def get_jobs(self):
+        all_jobs = []
+        start = 0
+        BATCH_SIZE = 25
+        has_more = True
+        consecutive_errors = 0
+        MAX_CONSECUTIVE_ERRORS = 3
+
+        print(self.url())
+        print(self.get_cache_key())
+
+        cache_key = self.get_cache_key()
+        cached_jobs = cache.get(cache_key)
+        if cached_jobs:
+            print("Returning cached results")
+            return cached_jobs
+
+        try:
+            while has_more:
+                try:
+                    jobs = self.fetch_job_batch(start)
+                    if not jobs:
+                        has_more = False
+                        break
+
+                    all_jobs.extend(jobs)
+                    print(f"Fetched {len(jobs)} jobs. Total: {len(all_jobs)}")
+
+                    if self.limit and len(all_jobs) >= self.limit:
+                        all_jobs = all_jobs[: self.limit]
+                        break
+
+                    consecutive_errors = 0
+                    start += BATCH_SIZE
+
+                    # delay: 2000–3000ms
+                    delay(2000 + random.randint(0, 1000))
+                except Exception as e:
+                    consecutive_errors += 1
+                    print(f"Error fetching batch (attempt {consecutive_errors}): {e}")
+
+                    if consecutive_errors >= MAX_CONSECUTIVE_ERRORS:
+                        print("Max consecutive errors reached. Stopping.")
+                        break
+
+                    backoff_ms = (2 ** consecutive_errors) * 1000
+                    delay(backoff_ms)
+
+            if all_jobs:
+                cache.set(cache_key, all_jobs)
+
+            return all_jobs
+        except Exception as e:
+            print("Fatal error in job fetching:", e)
+            raise
+
+    def fetch_job_batch(self, start: int):
+        headers = {
+            "User-Agent": random_user_agent(),
+            "Accept": "application/json, text/javascript, */*; q=0.01",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Accept-Encoding": "gzip, deflate, br",
+            "Referer": "https://www.linkedin.com/jobs",
+            "X-Requested-With": "XMLHttpRequest",
+            "Connection": "keep-alive",
+            "Sec-Fetch-Dest": "empty",
+            "Sec-Fetch-Mode": "cors",
+            "Sec-Fetch-Site": "same-origin",
+            "Cache-Control": "no-cache",
+            "Pragma": "no-cache",
+        }
+
+        url = self.url(start)
+        resp = requests.get(url, headers=headers, timeout=10)
+
+        if resp.status_code == 429:
+            raise RuntimeError("Rate limit reached")
+        if resp.status_code != 200:
+            raise RuntimeError(f"Unexpected status code: {resp.status_code}")
+
+        return parse_job_list(resp.text)
+    
+
+def parse_job_list(job_data: str):
+    try:
+        soup = BeautifulSoup(job_data, "html.parser")
+        jobs = soup.find_all("li")
+        results = []
+
+        for idx, element in enumerate(jobs):
+            try:
+                job = element
+
+                def text_or_empty(selector):
+                    node = job.select_one(selector)
+                    return node.get_text(strip=True) if node else ""
+
+                position = text_or_empty(".base-search-card__title")
+                company = text_or_empty(".base-search-card__subtitle")
+                location = text_or_empty(".job-search-card__location")
+
+                date_element = job.find("time")
+                date = date_element.get("datetime") if date_element else None
+
+                salary_node = job.select_one(".job-search-card__salary-info")
+                if salary_node:
+                    salary = " ".join(salary_node.get_text(strip=True).split())
+                else:
+                    salary = "Not specified"
+
+                job_link = job.select_one(".base-card__full-link")
+                job_url = job_link.get("href") if job_link else ""
+
+                logo_node = job.select_one(".artdeco-entity-image")
+                company_logo = logo_node.get("data-delayed-url") if logo_node else ""
+
+                ago_node = job.select_one(".job-search-card__listdate")
+                ago_time = ago_node.get_text(strip=True) if ago_node else ""
+
+                if not position or not company:
+                    continue
+
+                results.append(
+                    {
+                        "position": position,
+                        "company": company,
+                        "location": location,
+                        "date": date,
+                        "salary": salary or "Not specified",
+                        "jobUrl": job_url,
+                        "companyLogo": company_logo,
+                        "agoTime": ago_time,
+                    }
+                )
+            except Exception as e:
+                print(f"Error parsing job at index {idx}: {e}")
+                continue
+
+        return results
+    except Exception as e:
+        print("Error parsing job list:", e)
+        return []
