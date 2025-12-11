@@ -155,3 +155,12 @@ def normalize_and_mask_single(raw_log: RawLog) -> NormalizedLog:
 @app.post("/normalize-mask", response_model=NormalizedLog)
 def normalize_and_mask(record: RawLog):
     return normalize_and_mask_single(record)
+
+
+@app.post("/normalize-mask/batch", response_model=BatchResponse)
+def normalize_and_mask_batch(request: BatchRequest):
+    """
+    Batch endpoint for multiple records.
+    """
+    results = [normalize_and_mask_single(rec) for rec in request.records]
+    return BatchResponse(results=results)
