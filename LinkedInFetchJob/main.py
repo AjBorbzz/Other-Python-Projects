@@ -100,3 +100,92 @@ class Query:
             "executive": "6",
         }
         return experience_range.get(self.experience_level.lower(), "")
+    
+    def get_job_type(self) -> str:
+        job_type_range = {
+            "full time": "F",
+            "full-time": "F",
+            "part time": "P",
+            "part-time": "P",
+            "contract": "C",
+            "temporary": "T",
+            "volunteer": "V",
+            "internship": "I",
+        }
+        return job_type_range.get(self.job_type.lower(), "")
+
+    def get_remote_filter(self) -> str:
+        remote_filter_range = {
+            "on-site": "1",
+            "on site": "1",
+            "remote": "2",
+            "hybrid": "3",
+        }
+        return remote_filter_range.get(self.remote_filter.lower(), "")
+
+    def get_salary(self) -> str:
+        # Original JS uses object keys; support string or int input
+        salary_range = {
+            "40000": "1",
+            "60000": "2",
+            "80000": "3",
+            "100000": "4",
+            "120000": "5",
+        }
+        key = str(self.salary) if self.salary is not None else ""
+        return salary_range.get(key, "")
+
+    def get_has_verification(self) -> str:
+        # Replicates JS: returns "true"/"false" string
+        return "true" if self.has_verification else "false"
+
+    def get_under_10_applicants(self) -> str:
+        return "true" if self.under_10_applicants else "false"
+
+    def get_page(self) -> int:
+        return self.page * 25
+
+    def url(self, start: int = 0) -> str:
+        base = f"https://{self.host}/jobs-guest/jobs/api/seeMoreJobPostings/search?"
+        params = {}
+
+        if self.keyword:
+            params["keywords"] = self.keyword
+        if self.location:
+            params["location"] = self.location
+
+        tpr = self.get_date_since_posted()
+        if tpr:
+            params["f_TPR"] = tpr
+
+        salary_code = self.get_salary()
+        if salary_code:
+            params["f_SB2"] = salary_code
+
+        exp = self.get_experience_level()
+        if exp:
+            params["f_E"] = exp
+
+        remote_code = self.get_remote_filter()
+        if remote_code:
+            params["f_WT"] = remote_code
+
+        jt = self.get_job_type()
+        if jt:
+            params["f_JT"] = jt
+
+        # To mirror JS behavior most closely, always send these flags
+        params["f_VJ"] = self.get_has_verification()
+        params["f_EA"] = self.get_under_10_applicants()
+
+        params["start"] = start + self.get_page()
+
+        if self.sort_by == "recent":
+            params["sortBy"] = "DD"
+        elif self.sort_by == "relevant":
+            params["sortBy"] = "R"
+
+        return base + urlencode(params)
+
+    def get_cache_key(self) -> str:
+        return f"{self.url(0)}_limit:{self.limit}"
