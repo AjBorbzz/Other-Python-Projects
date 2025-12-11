@@ -45,7 +45,7 @@ cache = JobCache()
 
 
 USER_AGENTS = [
-    # A few common UA strings (extend if needed)
+    # A few common UA strings (extend if needed)y
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
     "AppleWebKit/537.36 (KHTML, like Gecko) "
     "Chrome/122.0.0.0 Safari/537.36",
@@ -61,3 +61,23 @@ def random_user_agent() -> str:
     return random.choice(USER_AGENTS)
 
 
+class Query:
+    def __init__(self, query_obj: dict):
+        self.host = query_obj.get("host", "www.linkedin.com")
+
+        def norm(s):
+            return s.strip().replace(" ", "+") if isinstance(s, str) else ""
+
+        self.keyword = norm(query_obj.get("keyword", ""))
+        self.location = norm(query_obj.get("location", ""))
+
+        self.date_since_posted = query_obj.get("dateSincePosted", "") or ""
+        self.job_type = query_obj.get("jobType", "") or ""
+        self.remote_filter = query_obj.get("remoteFilter", "") or ""
+        self.salary = query_obj.get("salary", "") or ""
+        self.experience_level = query_obj.get("experienceLevel", "") or ""
+        self.sort_by = query_obj.get("sortBy", "") or ""
+        self.limit = int(query_obj.get("limit") or 0)
+        self.page = int(query_obj.get("page") or 0)
+        self.has_verification = bool(query_obj.get("has_verification", False))
+        self.under_10_applicants = bool(query_obj.get("under_10_applicants", False))
