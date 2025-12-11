@@ -333,3 +333,26 @@ def parse_job_list(job_data: str):
     except Exception as e:
         print("Error parsing job list:", e)
         return []
+    
+# -------- Public API (mirroring module.exports) --------
+
+def query(query_object: dict):
+    q = Query(query_object)
+    return q.get_jobs()
+
+
+def clear_cache():
+    cache.clear()
+
+
+def get_cache_size() -> int:
+    return len(cache.cache)
+
+# Example usage:
+jobs = query({
+    "keyword": "python developer",
+    "location": "Spain",
+    "limit": 50,
+    "sortBy": "recent",
+})
+print(len(jobs))
