@@ -50,4 +50,18 @@ class SlackNotifier(Notifier):
 
     def send(self, notification: Notification) -> None:
         print(f"[SLACK] to={notification.recipient} msg={notification.message}")
+
+    
+## Add High-level service
+class NotificationService:
+    """
+    High-level logic depends on the Notifier abstraction, not a concrete class.
+    That makes the service testable and swappable.
+    """
+    def __init__(self, notifier: Notifier) -> None:
+        self.notifier = notifier
+
+    def notifiy(self, recipient: str, message: str) -> None:
+        notification = Notification(recipient=recipient, message=message)
+        self.notifier.send(notification)
         
