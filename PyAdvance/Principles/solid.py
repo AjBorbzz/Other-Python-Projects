@@ -37,6 +37,14 @@ class Notifier(ABC):
     def send(self, notification: Notification) -> None:
         raise NotImplementedError
     
+class EmailNotifier(Notifier):
+    def __init__(self, smtp_host: str) -> None:
+        self.smtp_host = smtp_host
+
+    def send(self, notification: Notification) -> None:
+        # Placeholder: integrate with SMTP library in real code
+        print(f"[EMAIL via {self.smtp_host}] to={notification.recipient} msg={notification.message}")
+    
 class SMSNotifier(Notifier):
     def __init__(self, provider_api_key: str) -> None:
         self.provider_api_key = provider_api_key
@@ -64,4 +72,15 @@ class NotificationService:
     def notifiy(self, recipient: str, message: str) -> None:
         notification = Notification(recipient=recipient, message=message)
         self.notifier.send(notification)
-        
+
+
+if __name__ == "__main__":
+    # Sample run
+    service = NotificationService(EmailNotifier(smtp_host="smtp.example.com"))
+    service.notify("user@example.com", "Your invoice is ready.")
+
+    service = NotificationService(SMSNotifier(provider_api_key="API_KEY"))
+    service.notify("+639171234567", "OTP: 123456")
+
+    service = NotificationService(SlackNotifier(webhook_url="https://hooks.slack.com/..."))
+    service.notify("#alerts", "CPU usage high on server-1.")
