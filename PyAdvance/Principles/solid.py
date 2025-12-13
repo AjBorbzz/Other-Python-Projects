@@ -23,3 +23,16 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
+from abc import ABC, abstractmethod
+
+
+@dataclass(frozen=True)
+class Notification:
+    recipient: str
+    message: str 
+
+class Notifier(ABC):
+
+    @abstractmethod
+    def send(self, notification: Notification) -> None:
+        raise NotImplementedError
