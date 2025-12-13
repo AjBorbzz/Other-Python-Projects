@@ -36,3 +36,11 @@ class Notifier(ABC):
     @abstractmethod
     def send(self, notification: Notification) -> None:
         raise NotImplementedError
+    
+class SMSNotifier(Notifier):
+    def __init__(self, provider_api_key: str) -> None:
+        self.provider_api_key = provider_api_key
+
+    def send(self, notification: Notification) -> None:
+        print(f"[SMS] to {notification.recipient} msg={notification.message}")
+        
