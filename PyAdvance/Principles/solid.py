@@ -43,4 +43,11 @@ class SMSNotifier(Notifier):
 
     def send(self, notification: Notification) -> None:
         print(f"[SMS] to {notification.recipient} msg={notification.message}")
+
+class SlackNotifier(Notifier):
+    def __init__(self, webhook_url: str) -> None:
+        self.webhook_url = webhook_url
+
+    def send(self, notification: Notification) -> None:
+        print(f"[SLACK] to={notification.recipient} msg={notification.message}")
         
