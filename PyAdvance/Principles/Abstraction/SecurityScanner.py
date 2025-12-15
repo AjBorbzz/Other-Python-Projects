@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List
+import random
 
 
 @dataclass(frozen=True)
@@ -33,3 +34,38 @@ class SecurityScanner:
             List of security findings
         """
         raise NotImplementedError
+    
+    @abstractmethod
+    def supported_targets(self) -> List[str]:
+        """
+        Describe what this scanner can scan
+        (e.g., ip, hostname, url).
+        """
+        raise NotImplementedError
+    
+
+# implementation:
+class PortScanner(SecurityScanner):
+    def __init__(self):
+        super().__init__(tool_name="PortScanner")
+
+    def supported_targets(self) -> List[str]:
+        return ["ip", "hostname"]
+
+    def scan(self, target: str) -> List[Finding]:
+        findings = []
+
+        open_ports = random.sample([22, 80, 443, 3306], k=2) 
+
+        for port in open_ports:
+            findings.append(
+                Finding(
+                    tool=self.tool_name,
+                    target=target,
+                    severity="MEDIUM",
+                    description=f"Port {port} is open",
+                    timestamp=datetime.now(),
+                )
+            )
+
+        return findings
