@@ -69,3 +69,23 @@ class PortScanner(SecurityScanner):
             )
 
         return findings
+    
+
+# Core Implementation:
+class VulnerabilityScanner(SecurityScanner):
+    def __init__(self):
+        super().__init__(tool_name="VulnScanner")
+
+    def supported_targets(self) -> List[str]:
+        return ["ip", "hostname", "url"]
+
+    def scan(self, target: str) -> List[Finding]:
+        return [
+            Finding(
+                tool=self.tool_name,
+                target=target,
+                severity="HIGH",
+                description="Outdated software detected (CVE-2023-XXXX)",
+                timestamp=datetime.now(),
+            )
+        ]
