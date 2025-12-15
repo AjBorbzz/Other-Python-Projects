@@ -18,12 +18,19 @@ data = [8, 3, 5, 2]
 # print(insertion_sort(data))
 
 # another insertion code
-def insert_sort(arr, num_to_sort):
-    for i in range(num_to_sort+1):
-        if arr[num_to_sort-1] > arr[num_to_sort]:
-            arr[num_to_sort], arr[num_to_sort-1] = arr[num_to_sort-1], arr[num_to_sort]
-        else:
-            return arr
-        
-t = insert_sort([2,7,15,24,10,3,4,1,0], 4)
+def insert_sorted(arr, idx):
+    value = arr.pop(idx)
+
+    # find insertion position
+    for i, x in enumerate(arr):
+        if value < x:
+            arr.insert(i, value)
+            break
+    else:
+        arr.append(value)
+
+    return arr
+
+
+t = insert_sorted([2, 7, 15, 24, 10, 3, 4, 1, 0], 4)
 print(t)
