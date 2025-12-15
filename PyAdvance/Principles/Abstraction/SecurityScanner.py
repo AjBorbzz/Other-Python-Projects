@@ -89,3 +89,40 @@ class VulnerabilityScanner(SecurityScanner):
                 timestamp=datetime.now(),
             )
         ]
+    
+class ScanOrchestrator:
+    """
+    Coordinates multiple scanners without knowing
+    their concrete implementations.
+    """
+
+    def __init__(self, scanners: List[SecurityScanner]):
+        self.scanners = scanners
+
+    def run(self, target: str, target_type: str) -> List[Finding]:
+        results: List[Finding] = []
+
+        for scanner in self.scanners:
+            if target_type in scanner.supported_targets():
+                results.extend(scanner.scan(target))
+
+        return results
+
+
+if __name__ == "__main__":
+    scanners = [
+        PortScanner(),
+        VulnerabilityScanner(),
+    ]
+
+    orchestrator = ScanOrchestrator(scanners)
+
+    findings = orchestrator.run(
+        target="192.168.1.10",
+        target_type="ip",
+    )
+
+    for f in findings:
+        print(
+            f"[{f.severity}] {f.tool} | {f.target} | {f.description} | {f.timestamp}"
+        )
