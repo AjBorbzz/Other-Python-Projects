@@ -1,0 +1,8 @@
+config.py
+pyproject.toml
+dns_automation.egg-info/PKG-INFO
+dns_automation.egg-info/SOURCES.txt
+dns_automation.egg-info/dependency_links.txt
+dns_automation.egg-info/entry_points.txt
+dns_automation.egg-info/requires.txt
+dns_automation.egg-info/top_level.txt

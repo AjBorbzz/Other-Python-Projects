@@ -1,0 +1,2 @@
+[console_scripts]
+dns-auto = dns_automation.cli:app
