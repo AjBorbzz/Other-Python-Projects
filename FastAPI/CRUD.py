@@ -135,3 +135,11 @@ def read_item(
     commons: dict = Depends(common_parameters)
 ):
     return {"item_id": item_id, "q": q, **commons}
+
+@app.post("/items", response_model=Item, status_code=status.HTTP_201_CREATED)
+def create_item(item: Item):
+    return item 
+
+@app.put("/items/{item_id}", response_model=Item)
+def update_item(item_id: int, item: ItemUpdate):
+    updated_item = {"id": item_id, **item.model_dump(exclude_unset=True)}
