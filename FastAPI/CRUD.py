@@ -151,3 +151,14 @@ def patch_item(item_id: int, item: ItemUpdate):
 @app.delete("/items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_item(item_id: int):
     return None
+
+
+@app.put("/items/{item_id}/advanced")
+def update_item_advanced(
+    item_id: int,
+    item: Item,
+    user: User,
+    importance: int = Body(ge=1, le=5),
+    q: Union[str, None] = None
+):
+    return {"item_id": item_id, "item": item, "user": user, "importance": importance, "q": q}
