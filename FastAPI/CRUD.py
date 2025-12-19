@@ -162,3 +162,10 @@ def update_item_advanced(
     q: Union[str, None] = None
 ):
     return {"item_id": item_id, "item": item, "user": user, "importance": importance, "q": q}
+
+@app.put("/items/{item_id}/single-body")
+def update_with_extra(
+    item_id: int,
+    item: Item = Body(embed=True),  # {"item": {...}}
+):
+    return {"item_id": item_id, "item": item}
