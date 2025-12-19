@@ -118,3 +118,12 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
     if token != "fake-token":
         raise HTTPException(status_code=401, detail = "Invalid token")
     return {"username": "johndoe", "role": "user"}
+
+def admin_required(current_user: dict = Depends(get_current_user)):
+    if current_user.get("role") != "admin":
+        raise HTTPException(status_code=403, detail = "Admin access required")
+    return current_user 
+
+@app.get("/")
+def root():
+    return {"message": "Welcome to FastAPI Complete Guide"}
