@@ -98,3 +98,23 @@ def common_parameters(
         limit: int = Query(default=100, le=100)
 ):
     return {"q": q, "skip": skip, "limit": limit}
+
+class Pagination:
+    def __init__(self, page: int=Query(1, ge=1), size: int= Query(10, ge=1, le=100)):
+        self.page = page
+        self.size = size 
+        self.skip = (page-1) * size
+        
+def get_db():
+    db = {"connected": True} 
+    try: 
+        yield db 
+    finally:
+        db["connected"] = False
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+
+def get_current_user(token: str = Depends(oauth2_scheme)):
+    if token != "fake-token":
+        raise HTTPException(status_code=401, detail = "Invalid token")
+    return {"username": "johndoe", "role": "user"}
