@@ -127,3 +127,11 @@ def admin_required(current_user: dict = Depends(get_current_user)):
 @app.get("/")
 def root():
     return {"message": "Welcome to FastAPI Complete Guide"}
+
+@app.get("/items/{item_id}")
+def read_item(
+    item_id: int = Path(ge=1, title="Item ID"),
+    q: Union[str, None] = Query(default=None, max_length=50),
+    commons: dict = Depends(common_parameters)
+):
+    return {"item_id": item_id, "q": q, **commons}
