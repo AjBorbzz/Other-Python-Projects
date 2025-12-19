@@ -90,3 +90,11 @@ class ItemUpdate(BaseModel):
     description: Union[str, None] = None
     price: Union[float, None] = Field(default=None, gt=0)
     tax: Union[float, None] = None
+
+
+def common_parameters(
+        q: Union[str, None] = Query(default=None, min_length=3),
+        skip: int = Query(default=0, ge=0),
+        limit: int = Query(default=100, le=100)
+):
+    return {"q": q, "skip": skip, "limit": limit}
