@@ -143,3 +143,11 @@ def create_item(item: Item):
 @app.put("/items/{item_id}", response_model=Item)
 def update_item(item_id: int, item: ItemUpdate):
     updated_item = {"id": item_id, **item.model_dump(exclude_unset=True)}
+
+@app.patch("/items/{item_id}")
+def patch_item(item_id: int, item: ItemUpdate):
+    return {"item_id": item_id, "updated_fields": item.model_dump(exclude_unset=True)}
+
+@app.delete("/items/{item_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_item(item_id: int):
+    return None
