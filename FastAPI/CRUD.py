@@ -193,4 +193,19 @@ def read_headers(
 def login(username: str = Form(), password: str = Form()):
     return {"username": username}
 
+@app.post("/files")
+async def create_file(
+    file: bytes = File(),
+    file_b: UploadFile = File(),
+    token: str = Form()
+):
+    return {
+        "file_size": len(file),
+        "file_b_content_type": file_b.content_type,
+        "token": token
+    }
+
+@app.post("/uploadfiles")
+async def upload_multiple_files(files: list[UploadFile]):
+    return [{"filename": f.filename, "content_type": f.content_type} for f in files]
 
