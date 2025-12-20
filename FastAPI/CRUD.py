@@ -177,3 +177,20 @@ def read_cookies(
 ):
     return {"session_id": session_id, "ads_id": ads_id}
 
+@app.get("/headers")
+def read_headers(
+    user_agent: str | None = Header(default=None),
+    x_token: str | None = Header(default=None),
+    accept_language: str | None = Header(default=None)
+):
+    return {
+        "User-Agent": user_agent,
+        "X-Token": x_token,
+        "Accept-Language": accept_language
+    }
+
+@app.post("/login")
+def login(username: str = Form(), password: str = Form()):
+    return {"username": username}
+
+
