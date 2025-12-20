@@ -169,3 +169,11 @@ def update_with_extra(
     item: Item = Body(embed=True),  # {"item": {...}}
 ):
     return {"item_id": item_id, "item": item}
+
+@app.get("/cookies")
+def read_cookies(
+    session_id: str | None = Cookie(default=None),
+    ads_id: str | None = Cookie(default=None)
+):
+    return {"session_id": session_id, "ads_id": ads_id}
+
