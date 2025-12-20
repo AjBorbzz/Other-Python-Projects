@@ -209,3 +209,13 @@ async def create_file(
 async def upload_multiple_files(files: list[UploadFile]):
     return [{"filename": f.filename, "content_type": f.content_type} for f in files]
 
+
+@app.get("/items-error/{item-id}")
+def read_item_error(item_id: int):
+    if item_id == 0:
+        raise HTTPException(
+            status_code=404,
+            detail="Item not found",
+            headers={"X-Error": "Item error header"}
+        )
+    return {"item_id": item_id}
