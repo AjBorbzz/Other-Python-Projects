@@ -259,3 +259,9 @@ def list_users():
     404: {"description": "Item not found"},
     200: {"description": "Item found"}
 })
+
+
+def read_item_status(item_id: int):
+    if item_id == 0:
+        raise HTTPException(status_code=404, detail="Item not found")
+    return {"item_id": item_id, "name": "Item"}
