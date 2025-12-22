@@ -232,3 +232,9 @@ async def custom_exception_handler(request: Request, exc: CustomException):
         status_code=418,
         content={"message": f"Custom error: {exc.name}"}
     )
+
+@app.get("/custom-error/{name}")
+async def trigger_custom_error(name: str):
+    if name == "error":
+        raise CustomException(name=name)
+    return {"name": name}
