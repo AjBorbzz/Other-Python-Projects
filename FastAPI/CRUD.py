@@ -224,3 +224,11 @@ def read_item_error(item_id: int):
 class CustomException(Exception):
     def __init__(self, name: str):
         self.name = name
+
+
+@app.exception_handler(CustomException)
+async def custom_exception_handler(request: Request, exc: CustomException):
+    return JSONResponse(
+        status_code=418,
+        content={"message": f"Custom error: {exc.name}"}
+    )
