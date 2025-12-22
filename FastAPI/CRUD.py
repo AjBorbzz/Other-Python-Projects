@@ -254,3 +254,8 @@ def list_users():
         {"id": 1, "username": "user1", "email": "user1@example.com", "role": "user"},
         {"id": 2, "username": "user2", "email": "user2@example.com", "role": "admin"}
     ]
+
+@app.get("/items-status/{item_id}", responses={
+    404: {"description": "Item not found"},
+    200: {"description": "Item found"}
+})
