@@ -219,3 +219,8 @@ def read_item_error(item_id: int):
             headers={"X-Error": "Item error header"}
         )
     return {"item_id": item_id}
+
+
+class CustomException(Exception):
+    def __init__(self, name: str):
+        self.name = name
