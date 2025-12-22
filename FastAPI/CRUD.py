@@ -276,3 +276,8 @@ def get_html():
         <body><h1>Hello from FastAPI!</h1></body>
     </html>
     """
+
+
+@app.get("/redirect")
+def redirect_to_docs():
+    return RedirectResponse(url="/docs")
