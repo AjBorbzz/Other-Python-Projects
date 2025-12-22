@@ -281,3 +281,9 @@ def get_html():
 @app.get("/redirect")
 def redirect_to_docs():
     return RedirectResponse(url="/docs")
+
+
+@app.get("/custom-response")
+def custom_response():
+    content = {"message": "Custom response"}
+    return JSONResponse(content=content, headers={"X-Custom": "Header"})
