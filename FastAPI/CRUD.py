@@ -238,3 +238,11 @@ async def trigger_custom_error(name: str):
     if name == "error":
         raise CustomException(name=name)
     return {"name": name}
+
+
+## Response Models and Status Codes
+@app.post("/users", response_model=UserOut, status_code=status.HTTP_201_CREATED)
+def create_user(user: UserIn):
+    # Simulate saving to DB and getting ID
+    user_out = UserOut(id=1, **user.dict())
+    return user_out
