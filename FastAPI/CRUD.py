@@ -246,3 +246,11 @@ def create_user(user: UserIn):
     # Simulate saving to DB and getting ID
     user_out = UserOut(id=1, **user.dict())
     return user_out
+
+
+@app.get("/users", response_model=list[UserOut])
+def list_users():
+    return [
+        {"id": 1, "username": "user1", "email": "user1@example.com", "role": "user"},
+        {"id": 2, "username": "user2", "email": "user2@example.com", "role": "admin"}
+    ]
