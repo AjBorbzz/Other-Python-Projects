@@ -265,3 +265,14 @@ def read_item_status(item_id: int):
     if item_id == 0:
         raise HTTPException(status_code=404, detail="Item not found")
     return {"item_id": item_id, "name": "Item"}
+
+
+
+@app.get("/html", response_class=HTMLResponse)
+def get_html():
+    return """
+    <html>
+        <head><title>FastAPI HTML</title></head>
+        <body><h1>Hello from FastAPI!</h1></body>
+    </html>
+    """
