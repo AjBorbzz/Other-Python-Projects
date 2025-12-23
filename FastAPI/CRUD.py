@@ -302,3 +302,17 @@ async def send_notification(
 ):
     background_tasks.add_task(write_log, f"Notification sent to {email}: {message}")
     return {"message": "Notification sent in background"}
+
+
+
+fake_users_db = {
+    "johndoe": {
+        "username": "johndoe",
+        "email": "john@example.com",
+        "hashed_password": "fakehashedsecret",
+        "disabled": False,
+    }
+}
+
+def fake_hash_password(password: str):
+    return "fakehashed" + password
