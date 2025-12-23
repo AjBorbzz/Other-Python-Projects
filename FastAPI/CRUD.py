@@ -334,3 +334,16 @@ async def read_users_me(current_user: dict = Depends(get_current_user)):
 @app.get("/admin-only")
 async def admin_only_route(admin: dict = Depends(admin_required)):
     return {"message": "Welcome admin", "user": admin}
+
+
+@app.get("/paginated-items")
+def get_paginated_items(
+    pagination: Pagination = Depends(),
+    db: dict = Depends(get_db)
+):
+    return {
+        "page": pagination.page,
+        "size": pagination.size,
+        "skip": pagination.skip,
+        "db_connected": db["connected"]
+    }
