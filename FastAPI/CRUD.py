@@ -292,3 +292,13 @@ def custom_response():
 def write_log(message: str):
     with open("log.txt", "a") as f:
         f.write(f"{message}\n")
+
+
+@app.post("/send-notification/{email}")
+async def send_notification(
+    email: str,
+    background_tasks: BackgroundTasks,
+    message: str = Body(embed=True)
+):
+    background_tasks.add_task(write_log, f"Notification sent to {email}: {message}")
+    return {"message": "Notification sent in background"}
