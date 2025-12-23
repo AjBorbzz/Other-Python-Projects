@@ -324,3 +324,13 @@ async def login_for_token(form_data: OAuth2PasswordRequestForm = Depends()):
     if not user or fake_hash_password(form_data.password) != user["hashed_password"]:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     return {"access_token": user["username"], "token_type": "bearer"}
+
+
+@app.get("/users/me")
+async def read_users_me(current_user: dict = Depends(get_current_user)):
+    return current_user
+
+
+@app.get("/admin-only")
+async def admin_only_route(admin: dict = Depends(admin_required)):
+    return {"message": "Welcome admin", "user": admin}
