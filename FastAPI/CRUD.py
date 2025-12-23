@@ -287,3 +287,8 @@ def redirect_to_docs():
 def custom_response():
     content = {"message": "Custom response"}
     return JSONResponse(content=content, headers={"X-Custom": "Header"})
+
+
+def write_log(message: str):
+    with open("log.txt", "a") as f:
+        f.write(f"{message}\n")
