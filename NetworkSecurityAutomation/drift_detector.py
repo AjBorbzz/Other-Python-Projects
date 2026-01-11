@@ -99,3 +99,94 @@ def extract_findings(scan_result: Dict[str, Any]) -> List[Finding]:
     # Keep output stable for diffs
     findings.sort(key=lambda f: (f.host, f.proto, f.port))
     return findings
+
+
+def to_keyset(findings: List[Finding]) -> set[Tuple[str, str, int]]:
+    return {(f.host, f.proto, f.port) for f in findings if f.state == "open"}
+
+
+def load_findings(path: Path) -> List[Finding]:
+    data = json.loads(path.read_text(encoding="utf-8"))
+    items = data.get("findings", [])
+    out: List[Finding] = []
+    for it in items:
+        out.append(
+            Finding(
+                host=it["host"],
+                port=int(it["port"]),
+                proto=it["proto"],
+                service=it.get("service", ""),
+                state=it.get("state", ""),
+                product=it.get("product"),
+                version=it.get("version"),
+            )
+        )
+    out.sort(key=lambda f: (f.host, f.proto, f.port))
+    return out
+
+
+def save_report(path: Path, targets: str, ports: List[int], raw_scan: Dict[str, Any], findings: List[Finding]) -> None:
+    payload = {
+        "targets": targets,
+        "ports": sorted(set(ports)),
+        "nmap_command_line": (raw_scan.get("nmap", {}) or {}).get("command_line"),
+        "scanstats": (raw_scan.get("nmap", {}) or {}).get("scanstats"),
+        "findings": [
+            {
+                "host": f.host,
+                "port": f.port,
+                "proto": f.proto,
+                "service": f.service,
+                "state": f.state,
+                "product": f.product,
+                "version": f.version,
+            }
+            for f in findings
+        ],
+    }
+    path.write_text(json.dumps(payload, indent=2, sort_keys=True), encoding="utf-8")
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser(description="Exposure Drift Detector (python-nmap PoC)")
+    ap.add_argument("--targets", required=True, help="CIDR or target expression (e.g. 192.168.1.0/24 or 10.0.0.1-20)")
+    ap.add_argument("--ports", default=",".join(map(str, DEFAULT_PORTS)), help="Comma-separated ports to check")
+    ap.add_argument("--timeout", type=int, default=120, help="Overall nmap timeout seconds")
+    ap.add_argument("--out", default="scan_current.json", help="Output JSON filename for this run")
+    ap.add_argument("--baseline", default=None, help="Baseline JSON filename to diff against")
+    args = ap.parse_args()
+
+    ports = [int(p.strip()) for p in args.ports.split(",") if p.strip()]
+    out_path = Path(args.out)
+
+    raw = scan_targets(args.targets, ports, args.timeout)
+    findings = extract_findings(raw)
+    save_report(out_path, args.targets, ports, raw, findings)
+
+    print(f"Wrote: {out_path} ({len(findings)} open-port findings)")
+
+    if args.baseline:
+        base_path = Path(args.baseline)
+        if not base_path.exists():
+            print(f"Baseline not found: {base_path}", file=sys.stderr)
+            return 2
+
+        old = load_findings(base_path)
+        old_keys = to_keyset(old)
+        new_keys = to_keyset(findings)
+
+        newly_exposed = sorted(new_keys - old_keys)
+        if not newly_exposed:
+            print("Diff: no newly-open ports vs baseline")
+            return 0
+
+        print("Diff: NEWLY-OPEN exposures (host proto port):")
+        for host, proto, port in newly_exposed:
+            print(f"  {host} {proto} {port}")
+        return 1
+
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
