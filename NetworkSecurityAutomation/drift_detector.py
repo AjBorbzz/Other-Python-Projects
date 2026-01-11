@@ -65,3 +65,37 @@ def scan_targets(targets: str, ports: List[int], timeout: int) -> Dict[str, Any]
 
     # Raw structure includes scan metadata + per-host results.
     return nm._scan_result  # noqa: SLF001 (acceptable for PoC export)
+
+
+def extract_findings(scan_result: Dict[str, Any]) -> List[Finding]:
+    findings: List[Finding] = []
+
+    scan = scan_result.get("scan", {})
+    for host, host_data in scan.items():
+        status = (host_data.get("status") or {}).get("state")
+        if status != "up":
+            continue
+
+        for proto in ("tcp", "udp"):
+            ports = host_data.get(proto, {})
+            for port_str, port_data in ports.items():
+                try:
+                    port = int(port_str)
+                except Exception:
+                    continue
+
+                findings.append(
+                    Finding(
+                        host=host,
+                        port=port,
+                        proto=proto,
+                        service=str(port_data.get("name") or ""),
+                        state=str(port_data.get("state") or ""),
+                        product=(port_data.get("product") or None),
+                        version=(port_data.get("version") or None),
+                    )
+                )
+
+    # Keep output stable for diffs
+    findings.sort(key=lambda f: (f.host, f.proto, f.port))
+    return findings
