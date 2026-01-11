@@ -32,3 +32,36 @@ DEFAULT_PORTS = [
     6379, # Redis
     27017 # MongoDB
 ]
+
+
+@dataclass(frozen=True)
+class Finding:
+    host: str
+    port: int
+    proto: str
+    service: str
+    state: str
+    product: str | None = None
+    version: str | None = None
+
+
+def scan_targets(targets: str, ports: List[int], timeout: int) -> Dict[str, Any]:
+    """
+    Uses a TCP connect scan (-sT) to avoid requiring root (unlike SYN scan -sS).
+    Includes service detection (-sV) and only returns open ports (--open).
+    """
+    nm = nmap.PortScanner()
+
+    port_arg = ",".join(str(p) for p in sorted(set(ports)))
+    # -n: no DNS, faster/cleaner. -sT: TCP connect. -sV: service version. --open: only open ports.
+    arguments = f"-n -sT -sV --open -p {port_arg}"
+
+    try:
+        nm.scan(hosts=targets, arguments=arguments, timeout=timeout)
+    except nmap.PortScannerError as e:
+        raise RuntimeError(f"Nmap execution failed: {e}") from e
+    except nmap.PortScannerTimeout as e:
+        raise RuntimeError(f"Nmap timed out: {e}") from e
+
+    # Raw structure includes scan metadata + per-host results.
+    return nm._scan_result  # noqa: SLF001 (acceptable for PoC export)
