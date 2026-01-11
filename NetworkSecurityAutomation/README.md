@@ -28,3 +28,13 @@ The repository plan will be a public, production-grade repo that shows network s
   * firewall_rule_hygiene
   * vuln_ticket_Dedupe
 
+
+
+### Apps
+**Exposure Drift Detector** : Exposure Drift Detector using python-nmap
+
+- Scans a CIDR/host list for a focused set of "risky" ports
+- Saves current findings to JSON
+- Optionally diffs vs a previous baseline and prints NEW exposures
+
+Ethics: scan only systems you own or have explicit permission to test.
