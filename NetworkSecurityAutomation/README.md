@@ -30,7 +30,7 @@ The repository plan will be a public, production-grade repo that shows network s
 
 
 
-### Apps
+## Apps
 **Exposure Drift Detector** : Exposure Drift Detector using python-nmap
 
 - Scans a CIDR/host list for a focused set of "risky" ports
@@ -38,3 +38,17 @@ The repository plan will be a public, production-grade repo that shows network s
 - Optionally diffs vs a previous baseline and prints NEW exposures
 
 Ethics: scan only systems you own or have explicit permission to test.
+
+#### Run it: 
+```python3 exposure_drift_poc.py --targets 192.168.1.0/24 --out baseline.json```
+
+#### Run the diff: 
+```python3 exposure_drift_poc.py --targets 192.168.1.0/24 --out current.json --baseline baseline.json```
+
+### Exit codes:
+
+* 0 = no new exposures (or no baseline used)
+
+* 1 = new exposures detected
+
+* 2 = baseline file missing
