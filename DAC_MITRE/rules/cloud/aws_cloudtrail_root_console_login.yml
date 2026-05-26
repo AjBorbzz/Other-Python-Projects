@@ -1,0 +1,33 @@
+title: AWS Root Account Console Login
+id: 7c1b2e4d-8a9f-4c5e-b6d7-1f2a3b4c5d6e
+status: test
+description: |
+ AWS root account console logins should be exceedingly rare in mature environments. Detects any successful ConsoleLogin event 
+ where userIdentity.type is 'Root'. Maps to abuse of cloud accout.
+references:
+  - https://attack.mitre.org/techniques/T1078/004/
+  - https://docs.aws.amazon.com/IAM/latest/UserGuide/best-practices.html 
+author: dac-lab
+date: 2025-01-15
+modified: 2025-01-15
+version: 1.0.0
+tags:
+  - attack.initial_access
+  - attack.persistence
+  - attack.privilege_escalation
+  - attack.defense_evasion
+  - attack.t1078.004
+logsource:
+  product: aws
+  service: cloudtrail
+detection:
+  selection:
+    eventSource: 'signin.amazonaws.com'
+    eventName: 'ConsoleLogin'
+    userIdentity.type: 'Root'
+    responseElements.ConsoleLogin: 'Success'
+  condition: selection
+falsepositives:
+  - Initial account setup before IAM users are provisioned.
+  - Documented break-glass procedures.
+level: critical

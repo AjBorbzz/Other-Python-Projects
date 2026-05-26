@@ -1,0 +1,9 @@
+pysigma==0.11.20
+pysigma-backend-elasticsearch==1.1.7
+pysigma-backend-splunk==1.1.6
+pysigma-backend-kusto==0.4.4
+sigma-cli==1.0.4
+pytest==8.3.4
+jsonschema==4.23.0
+PyYAML==6.0.2
+mitreattack-python==3.0.7
