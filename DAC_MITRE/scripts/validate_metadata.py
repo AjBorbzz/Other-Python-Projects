@@ -53,4 +53,37 @@ def validate(path: Path) -> list[str]:
     if not technique_tags:
         errs.append(f"{path}: must declare at least one attack.tXXXX[.YYY] tag")
 
+    fps = rule.get("falsepositives")
+
+    if not fps or (isinstance(fps, list) and not any(fps)):
+        errs.append(f"{path} : falsepositives must be a non-empty list")
+
+    refs = rule.get("references") or []
+    if not refs:
+        errs.append(f"{path} : references must be a non-empty list")
+
+    return errs 
+
+
+def main(root: str) -> int:
+    base = Path(root)
+    all_errs: list[str] = []
+    rule_count = 0
+    for path in base.rglob("*.yml"):
+        rule_count += 1
+        all_errs.extend(validate(path))
+
+    if all_errs:
+        for e in all_errs:
+            print(f"FAIL {e}")
+        print(f"\n{len(all_errs)} validation error(s) across {rule_count} rules(s)")
+        return 1
+    
+    print(f"OK  {rule_count} rules(s) passed metadata validation.")
+    return 0 
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1] if len(sys.argv) > 1 else "rulse"))
+
     
