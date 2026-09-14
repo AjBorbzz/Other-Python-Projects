@@ -1,0 +1,6 @@
+./venv
+*.pdf
+.venv/
+venv/
+ENV/
+env/
