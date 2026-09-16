@@ -1,0 +1,239 @@
+# ============================================================
+# Python / Django
+# ============================================================
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+*token.json
+
+# Python build / packaging
+build/
+dist/
+develop-eggs/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Python tooling caches
+.pytest_cache/
+.mypy_cache/
+.pyright/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+*.cover
+*.py.cover
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Django
+*.log
+db.sqlite3
+db.sqlite3-journal
+
+# Django collected static files
+staticfiles/
+static_root/
+
+# Local uploaded media
+media/
+
+# ============================================================
+# Node.js / React / Next.js
+# ============================================================
+
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# React / frontend build outputs
+build/
+dist/
+
+# Vite
+.vite/
+
+# Turborepo
+.turbo/
+
+# Parcel
+.cache/
+.parcel-cache/
+
+# Webpack cache
+.webpack/
+
+# SWC
+.swc/
+
+# Storybook
+storybook-static/
+
+# Testing / coverage
+coverage/
+.nyc_output/
+
+# ============================================================
+# Package manager caches
+# ============================================================
+
+# npm
+.npm/
+npm-debug.log*
+npm-error.log*
+
+# Yarn
+.yarn/cache/
+.yarn/unplugged/
+.yarn/build-state.yml
+.yarn/install-state.gz
+yarn-debug.log*
+yarn-error.log*
+
+# pnpm
+.pnpm-store/
+pnpm-debug.log*
+
+# ============================================================
+# Environment / secrets
+# ============================================================
+
+.env
+.env.*
+!.env.example
+!.env.template
+!.env.sample
+
+# Local environment overrides
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Python environment files
+.python-version
+
+# ============================================================
+# Credentials / certificates
+# ============================================================
+
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+
+credentials.json
+service-account.json
+secrets.json
+
+# ============================================================
+# Logs
+# ============================================================
+
+logs/
+*.log
+*.log.*
+
+# ============================================================
+# Temporary files
+# ============================================================
+
+tmp/
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+*~
+.cache/
+
+# ============================================================
+# IDE / Editors
+# ============================================================
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# JetBrains
+.idea/
+*.iml
+
+# Vim
+*.swp
+*.swo
+
+# ============================================================
+# Operating systems
+# ============================================================
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# Linux
+.directory
+
+# ============================================================
+# TypeScript
+# ============================================================
+
+*.tsbuildinfo
+next-env.d.ts
+=======================================
+
+.eslintcache
+.stylelintcache
+
+docker-compose.override.yml
+
+
+*.sqlite
+*.sqlite3
+*.db
+
+*.bak
+*.old
+*.orig
+*.rej
+
+.cursor/
+.claude/
