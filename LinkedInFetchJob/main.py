@@ -11,7 +11,11 @@ from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
+
+
 ### Constants
+LINKEDIN_HOST = "www.linkedin.com"
+
 DATE_RANGES = {
     "past month": "r2592000",
     "past week": "r604800",
@@ -55,6 +59,13 @@ SALARY_RANGES = {
 
 def delay(ms: int):
     time.sleep(ms/ 1000.0)
+
+class RateLimitError(Exception):
+    def __init__(self, retry_after=None):
+        self.retry_after = retry_after
+        super().__init__(
+            f"Rate limited. Retry-After={retry_after}"
+        )
 
 class JobCache:
     def __init__(self, ttl_seconds: int = 3600):
@@ -122,9 +133,9 @@ def random_user_agent() -> str:
 class Query:
     BATCH_SIZE = 25
     MAX_CONSECUTIVE_ERRORS = 3
-
+    
     def __init__(self, query_obj: dict):
-        self.host = query_obj.get("host", "www.linkedin.com")
+        self.host = LINKEDIN_HOST
 
         def norm(s):
             return s.strip() if isinstance(s, str) else ""
@@ -174,8 +185,10 @@ class Query:
 
         session.headers.update({
             "User-Agent": random_user_agent(),
-            "Accept": "text/html,application/xhtml+xml",
+            "Accept": "application/json, text/javascript, */*; q=0.01",
             "Accept-Language": "en-US,en;q=0.9",
+            "Referer": "https://www.linkedin.com/jobs",
+            "X-Requested-With": "XMLHttpRequest",
         })
 
         return session
@@ -264,76 +277,99 @@ class Query:
             logger.info("Returning cached results")
             return cached_jobs
 
-        jobs = []
+        all_jobs = []
         start = 0
-        errors = 0
+        consecutive_errors = 0
 
         while True:
             try:
-                batch = self.fetch_job_batch(start)
+                jobs = self.fetch_job_batch(start)
+
+            except RateLimitError as exc:
+                if exc.retry_after:
+                    logger.warning(
+                        "LinkedIn rate limited the request. Retry-After: %s",
+                        exc.retry_after,
+                    )
+                else:
+                    logger.warning(
+                        "LinkedIn rate limited the request."
+                    )
+
+                # Don't immediately retry a 429
+                break
 
             except requests.RequestException as exc:
-                errors += 1
+                consecutive_errors += 1
 
                 logger.warning(
-                    "Request failed attempt %s/%s: %s",
-                    errors,
+                    "HTTP request failed (%d/%d): %s",
+                    consecutive_errors,
                     self.MAX_CONSECUTIVE_ERRORS,
                     exc,
                 )
 
-                if errors >= self.MAX_CONSECUTIVE_ERRORS:
+                if consecutive_errors >= self.MAX_CONSECUTIVE_ERRORS:
                     break
 
-                time.sleep(2 ** errors)
+                time.sleep(2 ** consecutive_errors)
                 continue
 
-            except RuntimeError as exc:
-                logger.warning("%s", exc)
+            except Exception:
+                logger.exception("Unexpected error")
+                raise
+
+            if not jobs:
                 break
 
-            if not batch:
+            all_jobs.extend(jobs)
+
+            logger.info(
+                "Fetched %d jobs. Total: %d",
+                len(jobs),
+                len(all_jobs),
+            )
+
+            if self.limit and len(all_jobs) >= self.limit:
+                all_jobs = all_jobs[:self.limit]
                 break
 
-            jobs.extend(batch)
-
-            if self.limit and len(jobs) >= self.limit:
-                jobs = jobs[:self.limit]
-                break
-
-            errors = 0
+            consecutive_errors = 0
             start += self.BATCH_SIZE
 
             time.sleep(random.uniform(2.0, 3.0))
 
-        if jobs:
-            cache.set(cache_key, jobs)
+        if all_jobs:
+            cache.set(cache_key, all_jobs)
 
-        return jobs
+        return all_jobs
 
     def fetch_job_batch(self, start: int):
         headers = {
             "User-Agent": random_user_agent(),
             "Accept": "application/json, text/javascript, */*; q=0.01",
             "Accept-Language": "en-US,en;q=0.9",
-            "Accept-Encoding": "gzip, deflate, br",
             "Referer": "https://www.linkedin.com/jobs",
             "X-Requested-With": "XMLHttpRequest",
-            "Connection": "keep-alive",
-            "Sec-Fetch-Dest": "empty",
-            "Sec-Fetch-Mode": "cors",
-            "Sec-Fetch-Site": "same-origin",
-            "Cache-Control": "no-cache",
-            "Pragma": "no-cache",
         }
 
         url = self.url(start)
-        resp = self.session.get(url, timeout=(5,15))
+
+        resp = self.session.get(
+            url,
+            headers=headers,
+            timeout=(5, 15),
+        )
+
+        print("Status:", resp.status_code)
+        print("Retry-After:", resp.headers.get("Retry-After"))
 
         if resp.status_code == 429:
             retry_after = resp.headers.get("Retry-After")
-            raise RuntimeError(f"Rate limited. Retry-After={retry_after}")
+            raise RateLimitError(retry_after)
+
         resp.raise_for_status()
+
         return parse_job_list(resp.text)
 
 def extract_text(element, selector: str) -> str:
@@ -396,7 +432,6 @@ def parse_job_list(job_data: str):
         print("Error parsing job list:", e)
         return []
     
-# -------- Public API (mirroring module.exports) --------
 
 def query(query_object: dict):
     q = Query(query_object)
@@ -410,12 +445,15 @@ def clear_cache():
 def get_cache_size() -> int:
     return len(cache.cache)
 
-# Example usage:
-jobs = query({
-    "keyword": "python developer",
-    "location": "Spain",
-    "limit": 50,
-    "sortBy": "recent",
-})
-print(len(jobs))
-print(jobs)
+
+if __name__ == "__main__":
+    jobs = query({
+        "keyword": "python developer",
+        "location": "Spain",
+        "limit": 50,
+        "sortBy": "recent",
+    })
+
+    logger.info("Fetched %d jobs", len(jobs))
+    logger.warning("Rate limited")
+    logger.exception("Unexpected error")
