@@ -237,3 +237,10 @@ docker-compose.override.yml
 
 .cursor/
 .claude/
+
+
+# Apache Spark distributions
+**/spark-*-bin-hadoop*/
+**/spark-*.tgz
+**/spark-*.tar.gz
+**/spark-3.5.3-bin-hadoop3/
