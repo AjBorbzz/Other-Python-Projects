@@ -1,47 +1,105 @@
+import logging
 import time
 import random 
 from urllib.parse import urlencode
+
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 from bs4 import BeautifulSoup 
 
+
+logger = logging.getLogger(__name__)
+
+### Constants
+DATE_RANGES = {
+    "past month": "r2592000",
+    "past week": "r604800",
+    "24hr": "r86400",
+}
+
+EXPERIENCE_LEVELS = {
+    "internship": "1",
+    "entry level": "2",
+    "associate": "3",
+    "senior": "4",
+    "director": "5",
+    "executive": "6",
+}
+
+JOB_TYPES = {
+    "full time": "F",
+    "full-time": "F",
+    "part time": "P",
+    "part-time": "P",
+    "contract": "C",
+    "temporary": "T",
+    "volunteer": "V",
+    "internship": "I",
+}
+
+REMOTE_FILTERS = {
+    "on-site": "1",
+    "on site": "1",
+    "remote": "2",
+    "hybrid": "3",
+}
+
+SALARY_RANGES = {
+    "40000": "1",
+    "60000": "2",
+    "80000": "3",
+    "100000": "4",
+    "120000": "5",
+}
 
 def delay(ms: int):
     time.sleep(ms/ 1000.0)
 
 class JobCache:
-    def __init__(self, ttl_ms: int = 1000 * 60 * 60):
+    def __init__(self, ttl_seconds: int = 3600):
         self.cache = {}
-        self.TTL = ttl_ms
+        self.ttl = ttl_seconds
 
     def set(self, key, value):
-        self.cache[key] = {
-            "data": value,
-            "timestamp": time.time() * 1000,
-        }
+        self.cache[key] = (
+            value,
+            time.monotonic(),
+        )
 
     def get(self, key):
         item = self.cache.get(key)
-        if not item:
+
+        if item is None:
             return None
-        now = time.time() * 1000
-        if now - item["timestamp"] > self.TTL:
+
+        value, created_at = item
+
+        if time.monotonic() - created_at >= self.ttl:
             self.cache.pop(key, None)
             return None
-        return item["data"]
-    
+
+        return value
+
+    def clear_expired(self):
+        now = time.monotonic()
+
+        expired = [
+            key
+            for key, (_, created_at) in self.cache.items()
+            if now - created_at >= self.ttl
+        ]
+
+        for key in expired:
+            del self.cache[key]
 
     def clear(self):
-        now = time.time() * 1000
-        keys_to_delete = []
-        for key, val in self.cache.items():
-            if now - val['timestamp']> self.TTL:
-                keys_to_delete.append(key)
-        
-        for k in keys_to_delete:
-            self.cache.pop(k, None)
+        self.cache.clear()
+
+    def __len__(self):
+        return len(self.cache)
 
 cache = JobCache()
-
 
 
 USER_AGENTS = [
@@ -62,6 +120,9 @@ def random_user_agent() -> str:
 
 
 class Query:
+    BATCH_SIZE = 25
+    MAX_CONSECUTIVE_ERRORS = 3
+
     def __init__(self, query_obj: dict):
         self.host = query_obj.get("host", "www.linkedin.com")
 
@@ -70,7 +131,8 @@ class Query:
 
         self.keyword = norm(query_obj.get("keyword", ""))
         self.location = norm(query_obj.get("location", ""))
-
+        self.keyword = norm(query_obj.get("keyword", ""))
+        self.location = norm(query_obj.get("location", ""))
         self.date_since_posted = query_obj.get("dateSincePosted", "") or ""
         self.job_type = query_obj.get("jobType", "") or ""
         self.remote_filter = query_obj.get("remoteFilter", "") or ""
@@ -79,61 +141,63 @@ class Query:
         self.sort_by = query_obj.get("sortBy", "") or ""
         self.limit = int(query_obj.get("limit") or 0)
         self.page = int(query_obj.get("page") or 0)
-        self.has_verification = bool(query_obj.get("has_verification", False))
-        self.under_10_applicants = bool(query_obj.get("under_10_applicants", False))
-        
+        self.has_verification = bool(
+            query_obj.get("has_verification", False)
+        )
+        self.under_10_applicants = bool(
+            query_obj.get("under_10_applicants", False)
+        )
+
+        self.session = self._build_session()
+
+    @staticmethod
+    def _build_session():
+        session = requests.Session()
+
+        retry = Retry(
+            total=3,
+            connect=3,
+            read=3,
+            backoff_factor=1,
+            status_forcelist=(500, 502, 503, 504),
+            allowed_methods=("GET",),
+            respect_retry_after_header=True,
+        )
+
+        adapter = HTTPAdapter(
+            max_retries=retry,
+            pool_connections=5,
+            pool_maxsize=5,
+        )
+
+        session.mount("https://", adapter)
+
+        session.headers.update({
+            "User-Agent": random_user_agent(),
+            "Accept": "text/html,application/xhtml+xml",
+            "Accept-Language": "en-US,en;q=0.9",
+        })
+
+        return session
+
     def get_date_since_posted(self) -> str:
-        date_range = {
-            "past month": "r2592000",
-            "past week": "r604800",
-            "24hr": "r86400",
-        }
-        return date_range.get(self.date_since_posted.lower(), "")
+        return DATE_RANGES.get(self.date_since_posted.lower(), "")
     
     def get_experience_level(self) -> str:
-        experience_range = {
-            "internship": "1",
-            "entry level": "2",
-            "associate": "3",
-            "senior": "4",
-            "director": "5",
-            "executive": "6",
-        }
-        return experience_range.get(self.experience_level.lower(), "")
+        return EXPERIENCE_LEVELS.get(
+            self.experience_level.lower(),
+            "",
+        )
     
     def get_job_type(self) -> str:
-        job_type_range = {
-            "full time": "F",
-            "full-time": "F",
-            "part time": "P",
-            "part-time": "P",
-            "contract": "C",
-            "temporary": "T",
-            "volunteer": "V",
-            "internship": "I",
-        }
-        return job_type_range.get(self.job_type.lower(), "")
+        return JOB_TYPES.get(self.job_type.lower(), "")
 
     def get_remote_filter(self) -> str:
-        remote_filter_range = {
-            "on-site": "1",
-            "on site": "1",
-            "remote": "2",
-            "hybrid": "3",
-        }
-        return remote_filter_range.get(self.remote_filter.lower(), "")
+        return REMOTE_FILTERS.get(self.remote_filter.lower(), "")
 
     def get_salary(self) -> str:
-        # Original JS uses object keys; support string or int input
-        salary_range = {
-            "40000": "1",
-            "60000": "2",
-            "80000": "3",
-            "100000": "4",
-            "120000": "5",
-        }
         key = str(self.salary) if self.salary is not None else ""
-        return salary_range.get(key, "")
+        return SALARY_RANGES.get(key, "")
 
     def get_has_verification(self) -> str:
         # Replicates JS: returns "true"/"false" string
@@ -192,60 +256,60 @@ class Query:
     
 
     def get_jobs(self):
-        all_jobs = []
-        start = 0
-        BATCH_SIZE = 25
-        has_more = True
-        consecutive_errors = 0
-        MAX_CONSECUTIVE_ERRORS = 3
-
-        print(self.url())
-        print(self.get_cache_key())
-
         cache_key = self.get_cache_key()
+
         cached_jobs = cache.get(cache_key)
-        if cached_jobs:
-            print("Returning cached results")
+
+        if cached_jobs is not None:
+            logger.info("Returning cached results")
             return cached_jobs
 
-        try:
-            while has_more:
-                try:
-                    jobs = self.fetch_job_batch(start)
-                    if not jobs:
-                        has_more = False
-                        break
+        jobs = []
+        start = 0
+        errors = 0
 
-                    all_jobs.extend(jobs)
-                    print(f"Fetched {len(jobs)} jobs. Total: {len(all_jobs)}")
+        while True:
+            try:
+                batch = self.fetch_job_batch(start)
 
-                    if self.limit and len(all_jobs) >= self.limit:
-                        all_jobs = all_jobs[: self.limit]
-                        break
+            except requests.RequestException as exc:
+                errors += 1
 
-                    consecutive_errors = 0
-                    start += BATCH_SIZE
+                logger.warning(
+                    "Request failed attempt %s/%s: %s",
+                    errors,
+                    self.MAX_CONSECUTIVE_ERRORS,
+                    exc,
+                )
 
-                    # delay: 2000–3000ms
-                    delay(2000 + random.randint(0, 1000))
-                except Exception as e:
-                    consecutive_errors += 1
-                    print(f"Error fetching batch (attempt {consecutive_errors}): {e}")
+                if errors >= self.MAX_CONSECUTIVE_ERRORS:
+                    break
 
-                    if consecutive_errors >= MAX_CONSECUTIVE_ERRORS:
-                        print("Max consecutive errors reached. Stopping.")
-                        break
+                time.sleep(2 ** errors)
+                continue
 
-                    backoff_ms = (2 ** consecutive_errors) * 1000
-                    delay(backoff_ms)
+            except RuntimeError as exc:
+                logger.warning("%s", exc)
+                break
 
-            if all_jobs:
-                cache.set(cache_key, all_jobs)
+            if not batch:
+                break
 
-            return all_jobs
-        except Exception as e:
-            print("Fatal error in job fetching:", e)
-            raise
+            jobs.extend(batch)
+
+            if self.limit and len(jobs) >= self.limit:
+                jobs = jobs[:self.limit]
+                break
+
+            errors = 0
+            start += self.BATCH_SIZE
+
+            time.sleep(random.uniform(2.0, 3.0))
+
+        if jobs:
+            cache.set(cache_key, jobs)
+
+        return jobs
 
     def fetch_job_batch(self, start: int):
         headers = {
@@ -264,33 +328,31 @@ class Query:
         }
 
         url = self.url(start)
-        resp = requests.get(url, headers=headers, timeout=10)
+        resp = self.session.get(url, timeout=(5,15))
 
         if resp.status_code == 429:
-            raise RuntimeError("Rate limit reached")
-        if resp.status_code != 200:
-            raise RuntimeError(f"Unexpected status code: {resp.status_code}")
-
+            retry_after = resp.headers.get("Retry-After")
+            raise RuntimeError(f"Rate limited. Retry-After={retry_after}")
+        resp.raise_for_status()
         return parse_job_list(resp.text)
-    
+
+def extract_text(element, selector: str) -> str:
+    node = element.select_one(selector)
+    return node.get_text(" ", strip=True) if node else ""
 
 def parse_job_list(job_data: str):
     try:
         soup = BeautifulSoup(job_data, "html.parser")
-        jobs = soup.find_all("li")
+        jobs = soup.select("li div.base-card")
         results = []
 
         for idx, element in enumerate(jobs):
             try:
                 job = element
 
-                def text_or_empty(selector):
-                    node = job.select_one(selector)
-                    return node.get_text(strip=True) if node else ""
-
-                position = text_or_empty(".base-search-card__title")
-                company = text_or_empty(".base-search-card__subtitle")
-                location = text_or_empty(".job-search-card__location")
+                position = extract_text(job, ".base-search-card__title")
+                company = extract_text(job, ".base-search-card__subtitle")
+                location = extract_text(job, ".job-search-card__location")
 
                 date_element = job.find("time")
                 date = date_element.get("datetime") if date_element else None
