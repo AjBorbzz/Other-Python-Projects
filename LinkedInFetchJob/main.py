@@ -66,7 +66,7 @@ class Query:
         self.host = query_obj.get("host", "www.linkedin.com")
 
         def norm(s):
-            return s.strip().replace(" ", "+") if isinstance(s, str) else ""
+            return s.strip() if isinstance(s, str) else ""
 
         self.keyword = norm(query_obj.get("keyword", ""))
         self.location = norm(query_obj.get("location", ""))
